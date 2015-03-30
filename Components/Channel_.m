@@ -2,9 +2,9 @@ classdef Channel_ < ActiveModule
     %Channel_ v1.0, Lingchen Huang, 2015/3/16
     %	
     %   
-    %   This module supports two type of input, namely, Digital and
-    %   Electrical. Only single polarization, and real signal is support.
-    %   Noise calculation is defined as noiseCalc, to generate AWGN noise
+    %   This module supports Electrical signal input. Only single
+    %   polarization, and real signal is support. Noise calculation is
+    %   defined as noiseCalc, to generate AWGN noise 
     %
     %   Also see, ChannelAWGN
     %
@@ -35,7 +35,7 @@ classdef Channel_ < ActiveModule
         %%
         function Processing(obj)
             % Only digital and electrical signal type (object) is supported
-            Check(obj.Input, {'DigitalSignal', 'ElectricalSignal'});
+            Check(obj.Input, 'ElectricalSignal');
             obj.Output = Copy(obj.Input);
             if ~obj.Active
                 obj.Output.E = obj.Input.E;
