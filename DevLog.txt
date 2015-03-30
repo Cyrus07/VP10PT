@@ -1,0 +1,119 @@
+目录
+
+
+Class Tree
+
+hgsetget
+	Module
+	SignalType
+	BUFFER
+
+hgsetget is a subclass of handle class.
+The handle class is the superclass for all classes that follow handle semantics. A handle is a reference to an object. If you copy an object's handle, MATLAB copies only the handle and both the original and copy refer to the same object data. If a function modifies a handle object passed as an input argument, the modification affects the original input object.
+
+
+Module
+	+ActiveModule
+	+Electrical_
+
+自定义类中，初始化需要从外部传入参数的属性，定义为Public类型，其他参数根据需要定义；
+类的属性切勿预定义为其他自定义的object属性，如BUFFER；否则当该类声明为多个实例时，不同实例的相同类属性可能会有参数联动的问题，原因未知；
+Processing方法中，当Active后工作，当遇到空输入则空输出；
+•	多偏振（MIMO）仿真，只在Optical Domain 和 DSP部分采用多列定义信号或者实例，其余均采用Cell{}定义
+
+
+ActiveModule
+    SourceBinary
+    +Modulate_
+	+Coder_
+	+Channel_
+	DeOverlap
+	Decision_
+	FECDecoders
+	+BERT_
+
+实例通过Count属性初始化内部访问属性，计算一次BER后，重置所有实例；
+自定义类的实例通过Reset方法重置，若为有源类，需清空Buffer和输入、输出等可能影响之后输出的内容；否则，清零Count即可；
+
+
+
+
+ 
+SourceBinary
+
+
+
+
+
+ 
+Modulate_
+
+
+ModulateQAM
+
+
+
+ 
+Coder_
+
+
+CoderTDM
+
+
+
+
+ 
+DeOverlap
+
+
+
+ 
+Decision_
+
+
+
+ 
+FECDecoder
+
+
+
+ 
+BERT_
+
+
+BERTAsync
+
+
+
+
+ 
+Channel_
+
+
+
+
+
+ 
+SignalType
+
+ 
+BUFFER
+
+SetVariousProp
+
+
+ 
+Electrical_
+
+
+
+
+
+
+
+
+
+
+
+ 
+Optical_
