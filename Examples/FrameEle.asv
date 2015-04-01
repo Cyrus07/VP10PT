@@ -15,20 +15,18 @@ Tx.nSource = nPol;
 
 Ch.FrameOverlapRatio = FrameLen / FrameOverlapLen;
 Ch.SymbolRate = 28e9;
-Ch.TxSamplingRate = 28e9 * 1;
+Ch.TxSamplingRate = 28e9*1;
 Ch.TxBandwidth = 50e9;
-Ch.TxFilterShape = 'Gaussian';
-Ch.TxFilterDomain = 'TD';
-Ch.RxBandwidth = 50e9;
-Ch.RxFilterShape = 'Gaussian';
-Ch.RxFilterDomain = 'TD';
-Ch.RxSamplingRate = 28e9 * 1;
-Ch.SamplingPhase = 1;
+
+TxFilterOrder
+TxFilterShape
+TxFilterDomain
+
 
 SNR = [3:9];
 % SNR = 9;
 for id_SNR = 1:length(SNR)
-Ch.SNR = SNR(id_SNR);
+Channel.SNR = SNR(id_SNR);
 
 while true
     Tx.Processing();

@@ -10,7 +10,6 @@ classdef TxCoderCoh < ActiveModule
         % SourceBinarys
         nSource
         BitsType 	 % PRBS, Random, UserDef
-        BitseqLen
         PRBSOrder
         UserDefined
         FECType
@@ -61,21 +60,32 @@ classdef TxCoderCoh < ActiveModule
     end
     
     methods
-        
+        %%
         function obj = TxCoderCoh(varargin)
             SetVariousProp(obj, varargin{:})
         end
-        
+        %%
+        function Processing(obj)
+            obj.Count = obj.Count + 1;
+            Init(obj);
+            
+            % generate PRBS sequence
+            obj.PRBS.Processing();
+            
+            % modulate bit sequence to symbols
+            obj.Mod.Input = obj.PRBS.Output;
+            obj.Mod.Processing();
+            
+            % advanced modulation and frame overlap
+            obj.Coder.Input = obj.Mod.Output;
+            obj.Coder.Processing();
+            
+            % Output
+            obj.Output = obj.Coder.Output;
+        end
+        %%
         function Init(obj)
             if obj.Count == 1
-                obj.PRBS = SourceBinarys('nSource', obj.nSource,...
-                                        'BitsType', obj.BitsType,...
-                                        'BitseqLen', obj.BitseqLen,...
-                                        'PRBSOrder', obj.PRBSOrder,...
-                                        'UserDefined', obj.UserDefined,...
-                                        'FECType', obj.FECType);
-                obj.Mod = ModulateQAM('mn', obj.mn,...
-                                    'map', obj.map);
                 % To initiate subclasses
                 switch obj.CoderType
                     case 'TDM'
@@ -120,7 +130,14 @@ classdef TxCoderCoh < ActiveModule
                             'MapMethod', obj.MapMethod,...
                             'Option',obj.Option);
                 end
-                
+                obj.PRBS = SourceBinarys('nSource', obj.nSource,...
+                                        'BitsType', obj.BitsType,...
+                                        'BitseqLen', obj.Coder.DemandBitsNumPerPol,...
+                                        'PRBSOrder', obj.PRBSOrder,...
+                                        'UserDefined', obj.UserDefined,...
+                                        'FECType', obj.FECType);
+                obj.Mod = ModulateQAM('mn', obj.mn,...
+                                    'map', obj.map);
 %                 obj.Training = CoderTraining('PolarDiversity', obj.PolarDiversity,...
 %                     'BitPerSymbol', obj.BitPerSymbol,...
 %                     'NumFFT', obj.NumFFT,...
@@ -137,25 +154,10 @@ classdef TxCoderCoh < ActiveModule
 %                     'Active', obj.TrainingActvie);
             end
         end
-        
-        function Processing(obj)
-            Init(obj);
-            
-            % generate PRBS sequence
-            obj.PRBS.BitseqLen = obj.Coder.DemandBitsNumPerPol;
-            obj.PRBS.Processing();
-            
-            % modulate bit sequence to symbols
-            obj.Mod.Input = obj.PRBS.Output;
-            obj.Mod.Processing();
-            
-            % advanced modulation and frame overlap
-            obj.Coder.Input = obj.Mod.Output;
-            obj.Coder.Processing();
-            
-            % Output
-            obj.Output = obj.Coder.Output;
+        %%
+        function Reset(obj)
+            obj.PRBS.Reset;
+            obj.Coder.Reset;
         end
-        
     end
 end
