@@ -34,11 +34,12 @@ classdef SourceBinarys < ActiveModule
             obj.Output       = [];
             obj.MsgBuffer    = [];
             obj.BinarySource = [];
+            Init(obj);
         end
         %%
         function Processing(obj)
             obj.Count = obj.Count + 1;
-            Init(obj);
+            obj.MsgBuffer = [];
             for n = 1 : obj.nSource
                 obj.BinarySource{n}.Processing();
                 obj.Output{n} = obj.BinarySource{n}.Output;
@@ -46,17 +47,14 @@ classdef SourceBinarys < ActiveModule
             end
         end
         function Init(obj)
-            if obj.Count == 1
-                for n = 1 : obj.nSource
-                    obj.BinarySource{n} = SourceBinary(...
-                                'BitsType', obj.BitsType,...
-                               	'BitseqLen', obj.BitseqLen,...
-                               	'PRBSOrder', obj.PRBSOrder,...
-                              	'UserDefined', obj.UserDefined,...
-                               	'FECType', obj.FECType);
-                end
+            for n = 1 : obj.nSource
+                obj.BinarySource{n} = SourceBinary(...
+                    'BitsType', obj.BitsType,...
+                    'BitseqLen', obj.BitseqLen,...
+                    'PRBSOrder', obj.PRBSOrder,...
+                    'UserDefined', obj.UserDefined,...
+                    'FECType', obj.FECType);
             end
-            obj.MsgBuffer = [];
         end
 
     end

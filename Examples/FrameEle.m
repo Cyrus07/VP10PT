@@ -12,33 +12,35 @@ Tx.FrameLen = FrameLen;
 Tx.FrameOverlapLen = FrameOverlapLen;
 Tx.mn = BitPerSymbol^2;
 Tx.nSource = nPol;
+Init(Tx);
 
-Ch.FrameOverlapRatio = FrameLen / FrameOverlapLen;
-Ch.SymbolRate = 28e9;
-Ch.TxSamplingRate = 28e9 * 1;
-Ch.TxBandwidth = 50e9;
-Ch.TxFilterShape = 'Gaussian';
-Ch.TxFilterDomain = 'TD';
-Ch.RxBandwidth = 50e9;
-Ch.RxFilterShape = 'Gaussian';
-Ch.RxFilterDomain = 'TD';
-Ch.RxSamplingRate = 28e9 * 1;
-Ch.SamplingPhase = 1;
+Channel.FrameOverlapRatio = FrameOverlapLen / FrameLen;
+Channel.SymbolRate = 28e9;
+Channel.TxSamplingRate = 28e9 * 1;
+Channel.TxBandwidth = 50e9;
+Channel.TxFilterShape = 'Gaussian';
+Channel.TxFilterDomain = 'TD';
+Channel.RxBandwidth = 50e9;
+Channel.RxFilterShape = 'Gaussian';
+Channel.RxFilterDomain = 'TD';
+Channel.RxSamplingRate = 28e9 * 1;
+Channel.SamplingPhase = 1;
+Init(Channel);
 
 SNR = [3:9];
 % SNR = 9;
 for id_SNR = 1:length(SNR)
-Ch.SNR = SNR(id_SNR);
+Channel.Ch.SNR = SNR(id_SNR);
 
 while true
     Tx.Processing();
     
-    Ch.Input = Tx.Output;
-    Ch.Processing();
+    Channel.Input = Tx.Output;
+    Channel.Processing();
     
     % receiving and make hard decision
     % Dec.DispEVM = 1;
-    Dec.Input = Ch.Output;
+    Dec.Input = Channel.Output;
     Dec.hMod = Tx.Mod.h;
     Dec.Processing();
     
@@ -65,7 +67,7 @@ Log.BER(id_SNR) = sum(BERTest.ErrCount(3:end))/ sum(BERTest.BitCount(3:end));
 disp(['SNR = ',num2str(Channel.SNR)])
 toc;tic;
 Tx.Reset;
-Ch.Reset;
+Channel.Reset;
 FEC.Reset;
 BERTest.Reset;
 end

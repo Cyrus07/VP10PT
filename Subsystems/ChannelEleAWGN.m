@@ -17,6 +17,7 @@ classdef ChannelEleAWGN < ActiveModule
         TxFilterShape
         TxFilterDomain
         % Channel
+        Ch
         SNR
         % Rx LPF
         RxBandwidth
@@ -34,7 +35,6 @@ classdef ChannelEleAWGN < ActiveModule
         DAC
         Rectpulse
         LPFTx
-        Channel
         LPFRx
         Sampler
         ADC
@@ -49,7 +49,6 @@ classdef ChannelEleAWGN < ActiveModule
         %%
         function Processing(obj)
             obj.Count = obj.Count + 1;
-            Init(obj);
             
             %
             obj.DAC.Input = obj.Input;
@@ -64,11 +63,11 @@ classdef ChannelEleAWGN < ActiveModule
             obj.LPFTx.Processing();
             
             % transmit signal through channel
-            obj.Channel.Input = obj.LPFTx.Output;
-            obj.Channel.Processing();
+            obj.Ch.Input = obj.LPFTx.Output;
+            obj.Ch.Processing();
             
             %
-            obj.LPFRx.Input = obj.Channel.Output;
+            obj.LPFRx.Input = obj.Ch.Output;
             obj.LPFRx.Processing();
             
             %
@@ -88,25 +87,22 @@ classdef ChannelEleAWGN < ActiveModule
         end
         %%
         function Init(obj)
-            if obj.Count == 1
-                obj.DAC         = EleQuantizer('Resolution', obj.DACResolution);
-                obj.Rectpulse   = EleRectPulse('SymbolRate', obj.SymbolRate,...
-                                            'SamplingRate', obj.TxSamplingRate);
-                obj.LPFTx       = EleLPF('Bandwidth', obj.TxBandwidth,...
-                                        'FilterOrder', obj.TxFilterOrder,...
-                                        'FilterShape', obj.TxFilterShape,...
-                                        'FilterDomain', obj.TxFilterDomain);
-                obj.Channel     = ChEleAWGN('FrameOverlapRatio', obj.FrameOverlapRatio,...
-                                            'SNR', obj.SNR);
-                obj.LPFRx       = EleLPF('Bandwidth', obj.RxBandwidth,...
-                                        'FilterOrder', obj.RxFilterOrder,...
-                                        'FilterShape', obj.RxFilterShape,...
-                                        'FilterDomain', obj.RxFilterDomain);
-                obj.Sampler     = EleSampler('SamplingRate', obj.RxSamplingRate,...
-                                            'SamplingPhase', obj.SamplingPhase);
-                obj.ADC         = EleQuantizer('Resolution', obj.ADCResolution);
-                obj.DeO         = DeOverlap('FrameOverlapRatio', obj.FrameOverlapRatio);
-            end
+            obj.DAC         = EleQuantizer('Resolution', obj.DACResolution);
+            obj.Rectpulse   = EleRectPulse('SymbolRate', obj.SymbolRate,...
+                'SamplingRate', obj.TxSamplingRate);
+            obj.LPFTx       = EleLPF('Bandwidth', obj.TxBandwidth,...
+                'FilterOrder', obj.TxFilterOrder,...
+                'FilterShape', obj.TxFilterShape,...
+                'FilterDomain', obj.TxFilterDomain);
+            obj.Ch     = ChEleAWGN('FrameOverlapRatio', obj.FrameOverlapRatio);
+            obj.LPFRx       = EleLPF('Bandwidth', obj.RxBandwidth,...
+                'FilterOrder', obj.RxFilterOrder,...
+                'FilterShape', obj.RxFilterShape,...
+                'FilterDomain', obj.RxFilterDomain);
+            obj.Sampler     = EleSampler('SamplingRate', obj.RxSamplingRate,...
+                'SamplingPhase', obj.SamplingPhase);
+            obj.ADC         = EleQuantizer('Resolution', obj.ADCResolution);
+            obj.DeO         = DeOverlap('FrameOverlapRatio', obj.FrameOverlapRatio);
         end
         %%
         function Reset(obj)

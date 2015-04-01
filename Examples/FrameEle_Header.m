@@ -13,7 +13,7 @@ RandStream.setGlobalStream(s);
 clear s;
 
 Tx          = TxCoderCoh;
-Ch          = ChannelEleAWGN;
+Channel     = ChannelEleAWGN;
 Dec         = Decision_;
 FEC         = FECDecoders;
 BERTest     = BERTAsync;
