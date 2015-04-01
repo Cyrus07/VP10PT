@@ -116,6 +116,19 @@ SignalType
 	SignalTypeOptical is for Optical signal type. Except for fs (sampling rate) and E (signal field), fc, Azi, Ell are defined for center freuqency, azimuth, and ellipticity.
 
 BUFFER
+	Comments:
+	This module works as a buffer. 
+	When property "length" is assigned, the buffer can only buffer "length" length array. Overflow part is discarded.
+	Method Input push array in buffer and Output pop array out from buffer.
+
 SetVariousProp
+
 Electrical_
+	EleLPF
+	EleQuantizer
+	EleRectPulse
+	EleSampler
+
+	This module is an abstract class. Its subclasses are modeled as electrical components.
+	
 Optical_
