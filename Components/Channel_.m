@@ -30,7 +30,12 @@ classdef Channel_ < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Reset(~)
+        function Reset(obj)
+            obj.Input = [];
+            obj.Output = [];
+        end
+        %%
+        function Init(~)
         end
         %%
         function Processing(obj)

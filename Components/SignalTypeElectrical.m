@@ -1,6 +1,5 @@
 classdef SignalTypeElectrical < SignalType
-    %SignalTpyeElectrical Summary of this class goes here
-    %   Detailed explanation goes here
+    %SignalTypeElectrical v1.0, Lingchen Huang, 2015/3/16
     properties
         Rs = []
     end

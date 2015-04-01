@@ -1,6 +1,5 @@
 classdef EleLPF < Electrical_
-    %EleLPF Summary of this class goes here
-    %   Detailed explanation goes here
+    %EleLPF v1.0, Lingchen Huang, 2015/3/16
     
     properties
         Bandwidth   = 50e9;

@@ -33,31 +33,27 @@ classdef FECDecoder < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Count       = 0;
-            obj.Rx          = [];
             obj.Input       = [];
             obj.Output      = [];
-            obj.FECCodeLen  = [];
+            Init(obj);
+        end
+        %%
+        function Init(obj)
+            switch lower(obj.FECType)
+                case 'rs'
+                    obj.FECCodeLen = 255*8;
+                case 'ldpc'
+                    obj.FECCodeLen = [];
+                case 'rs-ldpc'
+                    obj.FECCodeLen = [];
+                case 'none'
+                    obj.FECCodeLen = 2^10;
+            end
+            obj.Rx = BUFFER;
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            if obj.Count == 1
-                obj.Rx = BUFFER;
-            end
             % This module must be Active
-            if obj.Count == 1
-                switch lower(obj.FECType)
-                    case 'rs'
-                        obj.FECCodeLen = 255*8;
-                    case 'ldpc'
-                        obj.FECCodeLen = [];
-                    case 'rs-ldpc'
-                        obj.FECCodeLen = [];
-                    case 'none'
-                        obj.FECCodeLen = 2^10;
-                end
-            end
             obj.Rx.Input(obj.Input);
             obj.Output = [];
             while length(obj.Rx.Buffer) >= obj.FECCodeLen

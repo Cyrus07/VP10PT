@@ -1,4 +1,5 @@
 classdef EleQuantizer < Electrical_
+    %EleQuantizer v1.0, Lingchen Huang, 2015/3/16
     % http://en.wikipedia.org/wiki/Quantization_(signal_processing)
     % mid-riser uniform quantizers
     

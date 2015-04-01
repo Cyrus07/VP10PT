@@ -1,6 +1,5 @@
 classdef SignalType < hgsetget 
-    %SIGNALTYPE Summary of this class goes here
-    %   Detailed explanation goes here
+    %SignalType v1.0, Lingchen Huang, 2015/3/16
     %
     %%
     properties

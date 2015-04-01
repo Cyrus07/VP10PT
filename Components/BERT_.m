@@ -34,6 +34,9 @@ classdef BERT_ < ActiveModule
             obj.ErrRatio = Inf;
         end
         %%
+        function Init(~)
+        end
+        %%
         function Processing(obj)
             % simple bit compare and error count.
             [ec, ~, Idx] = biterr(obj.Input, obj.RefBits);

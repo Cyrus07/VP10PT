@@ -3,11 +3,9 @@ classdef ActiveModule < Module
     %   Detailed explanation goes here
     %   v1.0, Lingchen Huang, 2015/3/16
 
-    properties (SetAccess = protected)
-        Count   = 0
-    end
     methods (Abstract)
         % clear Input, Output and Buffer
+        Init(obj)
         Reset(obj)
     end
 end

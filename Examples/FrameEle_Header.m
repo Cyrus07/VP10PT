@@ -14,6 +14,4 @@ clear s;
 
 Tx          = TxCoderCoh;
 Channel     = ChannelEleAWGN;
-Dec         = Decision_;
-FEC         = FECDecoders;
-BERTest     = BERTAsync;
+Rx          = DecisionHard;

@@ -1,6 +1,5 @@
 classdef EleRectPulse < Electrical_
-    %RECTANGLEFORM Summary of this class goes here
-    %   Detailed explanation goes here
+    %EleRectPulse v1.0, Lingchen Huang, 2015/3/16
     properties
         SymbolRate      = 28e9;
         SamplingRate    = 28e9*8;

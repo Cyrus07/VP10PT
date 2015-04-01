@@ -1,5 +1,5 @@
 classdef SourceBinarys < ActiveModule
-    %SourceMultiple v1.0, Lingchen Huang, 2015/3/16
+    %SourceBinarys v1.0, Lingchen Huang, 2015/3/16
     %
     %
     %
@@ -19,7 +19,7 @@ classdef SourceBinarys < ActiveModule
     
     properties (SetAccess = private)
         Output
-        MsgBuffer
+        RefMsg
         BinarySource
     end
     
@@ -30,22 +30,11 @@ classdef SourceBinarys < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Count        = 0;
             obj.Output       = [];
-            obj.MsgBuffer    = [];
-            obj.BinarySource = [];
+            obj.RefMsg    = [];
             Init(obj);
         end
         %%
-        function Processing(obj)
-            obj.Count = obj.Count + 1;
-            obj.MsgBuffer = [];
-            for n = 1 : obj.nSource
-                obj.BinarySource{n}.Processing();
-                obj.Output{n} = obj.BinarySource{n}.Output;
-                obj.MsgBuffer{n} = obj.BinarySource{n}.MsgBuffer.Output;
-            end
-        end
         function Init(obj)
             for n = 1 : obj.nSource
                 obj.BinarySource{n} = SourceBinary(...
@@ -54,9 +43,18 @@ classdef SourceBinarys < ActiveModule
                     'PRBSOrder', obj.PRBSOrder,...
                     'UserDefined', obj.UserDefined,...
                     'FECType', obj.FECType);
+                Init(obj.BinarySource{n});
             end
         end
-
+        %%
+        function Processing(obj)
+            obj.RefMsg = [];
+            for n = 1 : obj.nSource
+                Processing(obj.BinarySource{n});
+                obj.Output{n} = obj.BinarySource{n}.Output;
+                obj.RefMsg{n} = obj.BinarySource{n}.MsgBuffer.Output;
+            end
+        end
     end
 end
 

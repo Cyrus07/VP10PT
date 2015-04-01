@@ -1,5 +1,5 @@
 classdef ChEleAWGN < Channel_
-    %ChannelAWGN v1.0, Lingchen Huang, 2015/3/16
+    %ChEleAWGN v1.0, Lingchen Huang, 2015/3/16
     %
     %
     %   Overlap simulation is supported.
@@ -12,7 +12,9 @@ classdef ChEleAWGN < Channel_
     %
     %%
     properties
+        nPol                = 1
         FrameOverlapRatio   = 0
+        BufLen              = 2^12;
     end
     properties
 %         SNR     = 10;
@@ -36,18 +38,18 @@ classdef ChEleAWGN < Channel_
         function Reset(obj)
             obj.Input = [];
             obj.Output = [];
-            obj.noise = [];
+            Init(obj);
+        end
+        %%
+        function Init(obj)
+            for n = 1:obj.nPol
+                obj.noise{n} = BUFFER('Length', obj.BufLen);
+            end
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            if obj.Count == 1
-                for n = 1:length(obj.Input)
-                    obj.noise{n} = BUFFER('Length', length(obj.Input{n}.E));
-                end
-            end
             % AWGN
-            for n = 1:length(obj.Input)
+            for n = 1:obj.nPol
                 Check(obj.Input{n}, 'ElectricalSignal');
                 obj.Output{n} = Copy(obj.Input{n});
                 if ~obj.Active

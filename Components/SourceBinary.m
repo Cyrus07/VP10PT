@@ -35,6 +35,7 @@ classdef SourceBinary < ActiveModule
         MsgBuffer
     end
     properties (Access = private)
+        Count       = 0
         FECBuffer
         BitsBuffer
         bitseqlen
@@ -51,41 +52,36 @@ classdef SourceBinary < ActiveModule
         %%
         function Reset(obj)
             obj.Count       = 0;
-            obj.BitsBuffer  = [];
-            obj.MsgBuffer   = [];
-            obj.FECBuffer   = [];
             obj.Output      = [];
-            obj.bitseqlen   = [];
-            obj.FECMsgLen   = [];
+            Init(obj);
         end
         %%
         function Init(obj)
-            if obj.Count == 1
-                % if system overlap is zero, BitseqLen is a scaler,
-                % or it has two value, the first of which is for the first run,
-                % and the other one is for the later runs.
-                obj.bitseqlen = obj.BitseqLen(1);
-                obj.BitsBuffer = BUFFER;
-                obj.FECBuffer = BUFFER;
-                obj.MsgBuffer = BUFFER;
-                switch lower(obj.FECType)
-                    case 'rs'
-                        obj.FECMsgLen = 239*8;
-                    case 'ldpc'
-                        obj.FECMsgLen = [];
-                    case 'rs-ldpc'
-                        obj.FECMsgLen = [];
-                    case 'none'
-                        obj.FECMsgLen = obj.BitseqLen(end);
-                end
-            else
-                obj.bitseqlen = obj.BitseqLen(end);
+            % if system overlap is zero, BitseqLen is a scaler,
+            % or it has two value, the first of which is for the first run,
+            % and the other one is for the later runs.
+            obj.BitsBuffer = BUFFER;
+            obj.FECBuffer = BUFFER;
+            obj.MsgBuffer = BUFFER;
+            switch lower(obj.FECType)
+                case 'rs'
+                    obj.FECMsgLen = 239*8;
+                case 'ldpc'
+                    obj.FECMsgLen = [];
+                case 'rs-ldpc'
+                    obj.FECMsgLen = [];
+                case 'none'
+                    obj.FECMsgLen = obj.BitseqLen(end);
             end
         end
         %%
         function Processing(obj)
             obj.Count = obj.Count + 1;
-            Init(obj);
+            if obj.Count == 1
+                obj.bitseqlen = obj.BitseqLen(1);
+            else
+                obj.bitseqlen = obj.BitseqLen(end);
+            end
             % "=" to ensure BitsBuffer never to be empty
             while length(obj.BitsBuffer.Buffer) <= obj.bitseqlen
                 while length(obj.FECBuffer.Buffer) < obj.FECMsgLen

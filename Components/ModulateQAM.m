@@ -23,15 +23,18 @@ classdef ModulateQAM < Modulate_
         function obj = ModulateQAM(varargin)
             SetVariousProp(obj, varargin{:})
         end
+        %%
         function Reset(obj)
-            obj.Count = 0;
+            obj.Input = [];
+            obj.Output = [];
+            Init(obj);
+        end
+        %%
+        function Init(obj)
+            SetModHandle(obj);
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            if obj.Count == 1;
-                SetModHandle(obj);
-            end
             for n = 1:length(obj.Input)
                 obj.Output{n} = obj.h.modulate(obj.Input{n});
             end

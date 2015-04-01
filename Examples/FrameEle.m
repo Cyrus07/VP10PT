@@ -11,9 +11,10 @@ FrameOverlapLen = 2 * 2^10;     % [syms]
 Tx.FrameLen = FrameLen;
 Tx.FrameOverlapLen = FrameOverlapLen;
 Tx.mn = BitPerSymbol^2;
-Tx.nSource = nPol;
+Tx.nPol = nPol;
 Init(Tx);
 
+Channel.nPol = nPol;
 Channel.FrameOverlapRatio = FrameOverlapLen / FrameLen;
 Channel.SymbolRate = 28e9;
 Channel.TxSamplingRate = 28e9 * 1;
@@ -25,7 +26,13 @@ Channel.RxFilterShape = 'Gaussian';
 Channel.RxFilterDomain = 'TD';
 Channel.RxSamplingRate = 28e9 * 1;
 Channel.SamplingPhase = 1;
+Channel.ChBufLen = FrameLen * 1;
 Init(Channel);
+
+Rx.nPol = nPol;
+Rx.FECType = Tx.PRBS.BinarySource{1}.FECType;
+Rx.hMod = Tx.Mod.h;
+Init(Rx);
 
 SNR = [3:9];
 % SNR = 9;
@@ -33,43 +40,27 @@ for id_SNR = 1:length(SNR)
 Channel.Ch.SNR = SNR(id_SNR);
 
 while true
-    Tx.Processing();
+    
+    Processing(Tx);
     
     Channel.Input = Tx.Output;
-    Channel.Processing();
+    Processing(Channel);
     
-    % receiving and make hard decision
-    % Dec.DispEVM = 1;
-    Dec.Input = Channel.Output;
-    Dec.hMod = Tx.Mod.h;
-    Dec.Processing();
+    Rx.RefMsg = Tx.PRBS.RefMsg;
+    Rx.Input = Channel.Output;
+    Processing(Rx);
     
-    % FEC
-    FEC.nDecoders = nPol;
-    FEC.FECType = Tx.PRBS.BinarySource{1}.FECType;
-    FEC.Input = Dec.OutputBit;
-    FEC.Processing();
-    
-    % calculate bit error rate
-    % BERTest.DispIdx = 1;
-    % BERTest.DispBER = 1;
-    BERTest.RefBits = Tx.PRBS.MsgBuffer;
-    BERTest.Input = FEC.Output;
-    BERTest.Processing();
-    
-    % Termination condition
-    if sum(BERTest.ErrCount) > 300 && sum(BERTest.BitCount) >= 2^16
+    if ~isempty(Rx.BER)
         break;
     end
 end
 
-Log.BER(id_SNR) = sum(BERTest.ErrCount(3:end))/ sum(BERTest.BitCount(3:end));
+Log.BER(id_SNR) = Rx.BER;
 disp(['SNR = ',num2str(Channel.SNR)])
 toc;tic;
-Tx.Reset;
-Channel.Reset;
-FEC.Reset;
-BERTest.Reset;
+Reset(Tx);
+Reset(Channel);
+Reset(Rx);
 end
 
 figure(999);

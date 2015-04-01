@@ -1,8 +1,8 @@
 classdef ChannelEleAWGN < ActiveModule
-    % Copyright: (c)2011 (dawei.zju@gmail.com)
-    % last modified @ 2014 , lingchen
+    %ChannelEleAWGN   v1.0, Lingchen Huang, 2015/4/1
     
     properties
+        nPol
         Input
         Output
         FrameOverlapRatio
@@ -19,6 +19,7 @@ classdef ChannelEleAWGN < ActiveModule
         % Channel
         Ch
         SNR
+        ChBufLen
         % Rx LPF
         RxBandwidth
         RxFilterOrder
@@ -48,8 +49,6 @@ classdef ChannelEleAWGN < ActiveModule
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            
             %
             obj.DAC.Input = obj.Input;
             obj.DAC.Processing();
@@ -94,7 +93,10 @@ classdef ChannelEleAWGN < ActiveModule
                 'FilterOrder', obj.TxFilterOrder,...
                 'FilterShape', obj.TxFilterShape,...
                 'FilterDomain', obj.TxFilterDomain);
-            obj.Ch     = ChEleAWGN('FrameOverlapRatio', obj.FrameOverlapRatio);
+            obj.Ch          = ChEleAWGN('nPol', obj.nPol,...
+                'BufLen', obj.ChBufLen,...
+                'FrameOverlapRatio', obj.FrameOverlapRatio);
+            Init(obj.Ch);
             obj.LPFRx       = EleLPF('Bandwidth', obj.RxBandwidth,...
                 'FilterOrder', obj.RxFilterOrder,...
                 'FilterShape', obj.RxFilterShape,...
@@ -102,11 +104,16 @@ classdef ChannelEleAWGN < ActiveModule
             obj.Sampler     = EleSampler('SamplingRate', obj.RxSamplingRate,...
                 'SamplingPhase', obj.SamplingPhase);
             obj.ADC         = EleQuantizer('Resolution', obj.ADCResolution);
-            obj.DeO         = DeOverlap('FrameOverlapRatio', obj.FrameOverlapRatio);
+            obj.DeO         = DeOverlap('nPol', obj.nPol,...
+                'FrameOverlapRatio', obj.FrameOverlapRatio);
+            Init(obj.DeO);
         end
         %%
         function Reset(obj)
-            obj.DeO.Reset;
+            obj.Input = [];
+            obj.Output = [];
+            Reset(obj.Ch);
+            Reset(obj.DeO);
         end
     end
 end

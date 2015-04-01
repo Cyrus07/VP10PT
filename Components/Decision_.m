@@ -12,6 +12,12 @@ classdef Decision_ < ActiveModule
     %
     %
     %%
+    properties
+        nPol
+        hMod
+        RefSym      = []
+        DispEVM     = false
+    end
     properties (GetAccess = protected)
         Input
     end
@@ -24,11 +30,6 @@ classdef Decision_ < ActiveModule
         hDec
         RefBuf
     end
-    properties
-        hMod
-        RefSym      = []
-        DispEVM     = false
-    end
     
     methods
         function obj = Decision_(varargin)
@@ -36,36 +37,24 @@ classdef Decision_ < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Count       = 0;
             obj.Input       = [];
             obj.OutputBit  	= [];
             obj.OutputInt  	= [];
             obj.EVM         = [];
-            obj.hDec        = [];
-            obj.RefBuf      = [];
+            Init(obj);
         end
         %%
         function Init(obj)
-            if obj.Count == 1
-                for n = 1:length(obj.Input)
-                    obj.RefBuf{n} = BUFFER;
-                end
-                SedDecHandle(obj);
+            for n = 1:obj.nPol
+                obj.RefBuf{n} = BUFFER;
             end
-            if ~isempty(obj.RefSym)
-                for n = 1:size(obj.Input,2)
-                    obj.RefBuf{n}.Input(obj.RefSym{n});
-                    obj.RefSym{n} = [];
-                end
-            end
+            SetDecHandle(obj);
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            Init(obj);
             obj.OutputBit = [];
             obj.OutputInt = [];
-            for n = 1:length(obj.Input)
+            for n = 1:obj.nPol
                 if isempty(obj.Input{n})
                     obj.OutputBit{n} = [];
                     obj.OutputInt{n} = [];
@@ -81,10 +70,17 @@ classdef Decision_ < ActiveModule
                     obj.RefBuf{n}.Input(obj.hMod.modulate(obj.OutputBit{n}));
                 end
             end
+            %
+            if ~isempty(obj.RefSym)
+                for n = 1:obj.nPol
+                    obj.RefBuf{n}.Input(obj.RefSym{n});
+                    obj.RefSym{n} = [];
+                end
+            end
             ShowEVM(obj);
         end
         %%
-        function SedDecHandle(obj)
+        function SetDecHandle(obj)
             % de-modulation is implemented corresponding to transmitter
             % modulation format.
             switch lower(obj.hMod.Type)

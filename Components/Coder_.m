@@ -16,6 +16,7 @@ classdef Coder_ < ActiveModule
     %
     %%
     properties
+        nPol            = 1
         FrameLen        = 2^12
         FrameOverlapLen = 2^10
         mn              = 4

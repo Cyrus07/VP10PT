@@ -15,6 +15,7 @@ classdef DeOverlap < ActiveModule
     %
     %%
     properties
+        nPol
         FrameOverlapRatio   = 0
     end
     properties (Access = private)
@@ -34,19 +35,18 @@ classdef DeOverlap < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Count = 0;
             obj.Input = [];
             obj.Output = [];
-            obj.FrameBuf = [];
+            Init(obj);
+        end
+        %%
+        function Init(obj)
+            for n = 1:obj.nPol
+                obj.FrameBuf{n} = BUFFER;
+            end
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            if obj.Count == 1
-                for n = 1:length(obj.Input)
-                    obj.FrameBuf{n} = BUFFER;
-                end
-            end
             obj.Output = [];
             for n = 1:length(obj.Input)
                 if isobject(obj.Input{n})

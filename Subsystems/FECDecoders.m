@@ -8,7 +8,7 @@ classdef FECDecoders < ActiveModule
     %
     %%
     properties
-        nDecoders
+        nPol
         % FECDecoder
         FECType
     end
@@ -29,31 +29,27 @@ classdef FECDecoders < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Count   = 0;
-            obj.FEC     = [];
             obj.Input   = [];
             obj.Output  = [];
+            Init(obj);
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            Init(obj);
-            for n = 1:obj.nDecoders
+            for n = 1:obj.nPol
                 if isempty(obj.Input{n})
                     obj.Output{n} = [];
                     continue;
                 end
                 obj.FEC{n}.Input = obj.Input{n};
-                obj.FEC{n}.Processing();
+                Processing(obj.FEC{n});
                 obj.Output{n} = obj.FEC{n}.Output;
             end
         end
         %%
         function Init(obj)
-            if obj.Count == 1
-                for n = 1:obj.nDecoders
-                    obj.FEC{n} = FECDecoder('FECType', obj.FECType);
-                end
+            for n = 1:obj.nPol
+                obj.FEC{n} = FECDecoder('FECType', obj.FECType);
+                Init(obj.FEC{n});
             end
         end
     end

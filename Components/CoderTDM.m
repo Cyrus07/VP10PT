@@ -10,6 +10,7 @@ classdef CoderTDM < Coder_
     %
     %%
     properties
+%         nPol
 %         FrameLen
 %         FrameOverlapLen
 %         mn
@@ -29,19 +30,18 @@ classdef CoderTDM < Coder_
         end
         %%
         function Reset(obj)
-            obj.Count       = 0;
             obj.Input       = [];
             obj.Output      = [];
-            obj.OverlapBuf  = [];
+            Init(obj);
+        end
+        %%
+        function Init(obj)
+            for n = 1:obj.nPol
+                obj.OverlapBuf{n} = BUFFER('Length', obj.FrameLen);
+            end
         end
         %%
         function Processing(obj)
-            obj.Count = obj.Count + 1;
-            if obj.Count == 1
-                for n = 1:length(obj.Input)
-                    obj.OverlapBuf{n} = BUFFER('Length', obj.FrameLen);
-                end
-            end
             for n = 1:length(obj.Input)
                 % push in buffer
                 obj.OverlapBuf{n}.Input(obj.Input{n});

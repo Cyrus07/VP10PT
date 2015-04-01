@@ -1,6 +1,5 @@
 classdef BUFFER < hgsetget
-%   Copyright2014 (huanglingchen@zju.edu.cn)
-%   Last modification 2015, Lingchen
+%   BUFFER v1.0, Lingchen Huang, 2015/3/16
     
     properties
         Buffer = []
