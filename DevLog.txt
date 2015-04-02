@@ -11,18 +11,18 @@ hgsetget
 	A handle is a reference to an object. 
 	If you copy an object's handle, MATLAB copies only the handle and both the original and copy refer to the same object data. 
 	If a function modifies a handle object passed as an input argument, the modification affects the original input object.
+	In self-defined classes (A), DO NOT initialize a class property as another self-defined class (B), e.g. BUFFER. 
+	This would result in a problem that properties from several instances of this class (A) would share handles to the same initilized self-defined class (B).
 
 Module
 	+ActiveModule
 	+Electrical_
 
 	Comments:
-	In self-defined classes (Module and subclass of it), a property that needs to be initialized from outside the class, its attribute should be defined as Public. 
-	Or the attribute is defined as needed.
-	In self-defined classes (A), DO NOT initialize a class property as another self-defined class (B), e.g. BUFFER. 
-	This would result in a problem that properties from several instances of this class (A) would share handles to the same initilized self-defined class (B).
+	In self-defined classes (Module and subclass of it), a property that needs to be initialized from outside the class, its attributes should be defined as Public. 
+	Or the attributes are defined as needed.
 	In processing methods, first, begin processing when active is true; then, if empty input, empty output.
-	One signal pipe is defined with cell type {}. Then multi-input and/or multi output simulation can be easily extended.
+	In MIMO simulations, parallel signals are defined with cell type {}.
 
 ActiveModule
     SourceBinary
@@ -35,9 +35,10 @@ ActiveModule
 	+BERT_
 
 	Comments:
-	In ActiveModule and its subclasses, an instance initialize its properties by first run, which is indicated by Count property.
-	When one thorough BER estimate is finished, all subclasses of ActiveModule need reset (Reset method).
-	A subclass of ActiveModule reset itself by Reset method. A Reset method resets buffer, Count, input and output properties.
+	In ActiveModule's subclasses, methods of Init and Reset MUST be defined.
+	Before call processing method of an instance, it should be initialized by Init method, mostly passing arguments and initialize modules.
+	After a complete frame simulation, the instances of subclasses need to be reset by Reset method, before next frame simulation.
+	A Reset method resets buffer, input and output properties, and re-initialize the modules in the instance.
 
 SourceBinary
 	Comment:
@@ -70,7 +71,7 @@ Channel_
 	ChEleAWGN
 
 	Comments:
-	This is a AWGN model. The white gaussian REAK noise is calculated according to input signal power and SNR.
+	This module is based on AWGN model. The white gaussian REAL noise is calculated according to input signal power and SNR.
 	ChEleAWGN supports multiple input length and complex input samples. Besides, overlap between noise is supported.
 
 DeOverlap

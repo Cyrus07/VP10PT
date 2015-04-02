@@ -34,7 +34,7 @@ Rx.FECType = Tx.PRBS.BinarySource{1}.FECType;
 Rx.hMod = Tx.Mod.h;
 Init(Rx);
 
-SNR = [3:9];
+SNR = [3:11];
 % SNR = 9;
 for id_SNR = 1:length(SNR)
 Channel.Ch.SNR = SNR(id_SNR);
