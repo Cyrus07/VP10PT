@@ -37,9 +37,12 @@ classdef BERTAsync < BERT_
         end
         %%
         function Reset(obj)
+            obj.Input    = [];
             obj.ErrCount = [];
             obj.BitCount = [];
             obj.ErrRatio = Inf;
+            obj.ErrIdx   = [];
+            obj.RefBits  = [];
             Init(obj);
         end
         %%

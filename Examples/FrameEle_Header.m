@@ -1,9 +1,10 @@
 %   v1.0, Lingchen Huang, 2015/3/16
 
 clear all
-disp('=======================================')
-disp(datestr(now))
+disp('********************************')
 disp('Start simulation...')
+disp(datestr(now))
+disp('********************************')
 tic
 
 % Reinitialize the global random number stream 

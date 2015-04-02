@@ -15,7 +15,7 @@ classdef DeOverlap < ActiveModule
     %
     %%
     properties
-        nPol
+        nPol                = 1
         FrameOverlapRatio   = 0
     end
     properties (Access = private)

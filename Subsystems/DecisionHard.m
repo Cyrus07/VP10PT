@@ -5,13 +5,14 @@ classdef DecisionHard < ActiveModule
         nPol
         Input
         BER
-        
+        TCErrorCount    = 200
+        TCBitCount      = 2^16
         % Dec
         hMod
         DispEVM
         % FEC
         FECType
-        %
+        % BERT
         RefMsg
         DispIdx
         DispBER
@@ -44,7 +45,8 @@ classdef DecisionHard < ActiveModule
             obj.BERTest.Processing();
             
             % Termination condition
-            if sum(obj.BERTest.ErrCount) > 400 && sum(obj.BERTest.BitCount) >= 2^18
+            if sum(obj.BERTest.ErrCount) >= obj.TCErrorCount...
+                    && sum(obj.BERTest.BitCount) >= obj.TCBitCount
                 obj.BER = sum(obj.BERTest.ErrCount(3:end))...
                     / sum(obj.BERTest.BitCount(3:end));
             end
@@ -66,8 +68,9 @@ classdef DecisionHard < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Input = [];
-            obj.BER = [];
+            obj.Input   = [];
+            obj.RefMsg  = [];
+            obj.BER     = [];
             Reset(obj.Dec);
             Reset(obj.FEC);
             Reset(obj.BERTest);

@@ -56,7 +56,7 @@ while true
 end
 
 Log.BER(id_SNR) = Rx.BER;
-disp(['SNR = ',num2str(Channel.SNR)])
+disp(['SNR = ',num2str(SNR(id_SNR))])
 toc;tic;
 Reset(Tx);
 Reset(Channel);

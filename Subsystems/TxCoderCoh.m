@@ -157,6 +157,7 @@ classdef TxCoderCoh < ActiveModule
             Reset(obj.PRBS);
             Reset(obj.Mod);
             Reset(obj.Coder);
+            obj.Output = [];
         end
     end
 end
