@@ -1,5 +1,5 @@
-classdef OpticalActive < ActiveModule
-    %OpticalActive   v1.0, Lingchen Huang, 2015/4/1
+classdef Optical_ < Module
+    %Optical_ v1.0, Lingchen Huang, 2015/4/1
     
     properties (Constant)
         LightSpeed = 299792458;

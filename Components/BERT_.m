@@ -18,9 +18,6 @@ classdef BERT_ < ActiveModule
         ErrIdx
         RefBits
     end
-    properties (GetAccess = protected)
-        Input
-    end
     
     methods
         %%
@@ -37,12 +34,12 @@ classdef BERT_ < ActiveModule
         function Init(~)
         end
         %%
-        function Processing(obj)
+        function Processing(obj, x)
             % simple bit compare and error count.
-            [ec, ~, Idx] = biterr(obj.Input, obj.RefBits);
+            [ec, ~, Idx] = biterr(x, obj.RefBits);
             obj.ErrIdx = Idx;
             obj.ErrCount = obj.ErrCount + ec;
-            obj.BitCount = obj.BitCount + length(obj.Input);
+            obj.BitCount = obj.BitCount + length(x);
             obj.ErrRatio = obj.ErrCount / obj.BitCount;
         end
     end

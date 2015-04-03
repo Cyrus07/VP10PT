@@ -1,4 +1,4 @@
-classdef ChannelEleAWGN < ActiveModule
+classdef ChannelEleAWGN < Subsystem_
     %ChannelEleAWGN   v1.0, Lingchen Huang, 2015/4/1
     
     properties
@@ -48,41 +48,17 @@ classdef ChannelEleAWGN < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Processing(obj)
-            %
-            obj.DAC.Input = obj.Input;
-            obj.DAC.Processing();
+        function y = Processing(obj, x)
             
-            %
-            obj.Rectpulse.Input = obj.DAC.Output;
-            obj.Rectpulse.Processing();
+            dac = obj.DAC.Processing(x);
+            rect = obj.Rectpulse.Processing(dac);
+            lpftx = obj.LPFTx.Processing(rect);
+            ch = obj.Ch.Processing(lpftx);
+            lpfrx = obj.LPFRx.Processing(ch);
+            sampler = obj.Sampler.Processing(lpfrx);
+            adc = obj.ADC.Processing(sampler);
+            y = obj.DeO.Processing(adc);
             
-            %
-            obj.LPFTx.Input = obj.Rectpulse.Output;
-            obj.LPFTx.Processing();
-            
-            % transmit signal through channel
-            obj.Ch.Input = obj.LPFTx.Output;
-            obj.Ch.Processing();
-            
-            %
-            obj.LPFRx.Input = obj.Ch.Output;
-            obj.LPFRx.Processing();
-            
-            %
-            obj.Sampler.Input = obj.LPFRx.Output;
-            obj.Sampler.Processing();
-            
-            %
-            obj.DAC.Input = obj.Sampler.Output;
-            obj.DAC.Processing();
-            
-            % De-overlap
-            obj.DeO.Input = obj.DAC.Output;
-            obj.DeO.Processing();
-            
-            % 
-            obj.Output = obj.DeO.Output;
         end
         %%
         function Init(obj)
@@ -110,8 +86,6 @@ classdef ChannelEleAWGN < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Input = [];
-            obj.Output = [];
             Reset(obj.Ch);
             Reset(obj.DeO);
         end

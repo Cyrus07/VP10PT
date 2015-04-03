@@ -1,4 +1,4 @@
-classdef FECDecoders < ActiveModule
+classdef FECDecoders < Subsystem_
     %FECDecoders v1.0, Lingchen Huang, 2015/3/16
     %
     %
@@ -15,12 +15,6 @@ classdef FECDecoders < ActiveModule
     properties (Access = private)
         FEC
     end
-    properties (GetAccess = protected)
-        Input
-    end
-    properties (SetAccess = protected)
-        Output
-    end
     
     methods
         %%
@@ -28,28 +22,24 @@ classdef FECDecoders < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Reset(obj)
-            obj.Input   = [];
-            obj.Output  = [];
-            Init(obj);
-        end
-        %%
-        function Processing(obj)
-            for n = 1:obj.nPol
-                if isempty(obj.Input{n})
-                    obj.Output{n} = [];
-                    continue;
-                end
-                obj.FEC{n}.Input = obj.Input{n};
-                Processing(obj.FEC{n});
-                obj.Output{n} = obj.FEC{n}.Output;
-            end
-        end
-        %%
         function Init(obj)
             for n = 1:obj.nPol
                 obj.FEC{n} = FECDecoder('FECType', obj.FECType);
                 Init(obj.FEC{n});
+            end
+        end
+        %%
+        function Reset(obj)
+            Init(obj);
+        end
+        %%
+        function y = Processing(obj, x)
+            for n = 1:obj.nPol
+                if isempty(x{n})
+                    y{n} = [];
+                    continue;
+                end
+                y{n} = obj.FEC{n}.Processing(x{n});
             end
         end
     end

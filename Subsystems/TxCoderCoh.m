@@ -1,4 +1,4 @@
-classdef TxCoderCoh < ActiveModule
+classdef TxCoderCoh < Subsystem_
     %TxCoderCoh v1.0, Lingchen Huang, 2015/3/16
     
     properties
@@ -64,21 +64,17 @@ classdef TxCoderCoh < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Processing(obj)
+        function y = Processing(obj)
             
             % generate PRBS sequence
-            Processing(obj.PRBS);
+            prbs = obj.PRBS.Processing;
             
             % modulate bit sequence to symbols
-            obj.Mod.Input = obj.PRBS.Output;
-            Processing(obj.Mod);
+            mod = obj.Mod.Processing(prbs);
             
             % advanced modulation and frame overlap
-            obj.Coder.Input = obj.Mod.Output;
-            Processing(obj.Coder);
+            y = obj.Coder.Processing(mod);
             
-            % Output
-            obj.Output = obj.Coder.Output;
         end
         %%
         function Init(obj)
@@ -155,9 +151,7 @@ classdef TxCoderCoh < ActiveModule
         %%
         function Reset(obj)
             Reset(obj.PRBS);
-            Reset(obj.Mod);
             Reset(obj.Coder);
-            obj.Output = [];
         end
     end
 end

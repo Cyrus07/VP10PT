@@ -18,12 +18,7 @@ classdef Decision_ < ActiveModule
         RefSym      = []
         DispEVM     = false
     end
-    properties (GetAccess = protected)
-        Input
-    end
     properties (SetAccess = protected)
-        OutputInt
-        OutputBit
         EVM
     end
     properties (Access = private)
@@ -37,10 +32,7 @@ classdef Decision_ < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Input       = [];
-            obj.OutputBit  	= [];
-            obj.OutputInt  	= [];
-            obj.EVM         = [];
+            obj.EVM = [];
             Init(obj);
         end
         %%
@@ -51,23 +43,21 @@ classdef Decision_ < ActiveModule
             SetDecHandle(obj);
         end
         %%
-        function Processing(obj)
-            obj.OutputBit = [];
-            obj.OutputInt = [];
+        function [yBit, yInt] = Processing(obj, x)
             for n = 1:obj.nPol
-                if isempty(obj.Input{n})
-                    obj.OutputBit{n} = [];
-                    obj.OutputInt{n} = [];
+                if isempty(x{n})
+                    yBit{n} = [];
+                    yInt{n} = [];
                     continue;
                 end
-                inVec = obj.Input{n};
+                inVec = x{n};
                 % both "integer" and "bit" output type is implemented
-                obj.OutputInt{n} = obj.hDec.demodulate(inVec);
+                yInt{n} = obj.hDec.demodulate(inVec);
                 hDecBit = copy(obj.hDec);
                 hDecBit.OutputType = 'bit';
-                obj.OutputBit{n} = hDecBit.demodulate(inVec);
+                yBit{n} = hDecBit.demodulate(inVec);
                 if isempty(obj.RefBuf{n}.Buffer)
-                    obj.RefBuf{n}.Input(obj.hMod.modulate(obj.OutputBit{n}));
+                    obj.RefBuf{n}.Input(obj.hMod.modulate(yBit{n}));
                 end
             end
             %
@@ -77,7 +67,7 @@ classdef Decision_ < ActiveModule
                     obj.RefSym{n} = [];
                 end
             end
-            ShowEVM(obj);
+            ShowEVM(obj, x);
         end
         %%
         function SetDecHandle(obj)
@@ -99,16 +89,16 @@ classdef Decision_ < ActiveModule
             obj.hDec.OutputType = 'integer';
         end
         %%
-        function ShowEVM(obj)
+        function ShowEVM(obj, x)
             if obj.DispEVM
-                if isempty(obj.Input{obj.DispEVM})
+                if isempty(x{obj.DispEVM})
                     obj.EVM = [];
                     return;
                 end
                 N = (sqrt(obj.hMod.M)-1)^2;
-                len = length(obj.Input{n});
+                len = length(x{n});
                 obj.EVM ...
-                    = sqrt(abs(obj.Input{n}-obj.RefBuf{n}.Output(len)).^2/N);
+                    = sqrt(abs(x{n}-obj.RefBuf{n}.Output(len)).^2/N);
                 len = length(obj.EVM);
                 npartion = 16;
                 dlen = floor(len/npartion);

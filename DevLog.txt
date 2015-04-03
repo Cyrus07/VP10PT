@@ -16,7 +16,9 @@ hgsetget
 
 Module
 	+ActiveModule
+    +Modulate_
 	+Electrical_
+	+Optical_
 
 	Comments:
 	In self-defined classes (Module and subclass of it), a property that needs to be initialized from outside the class, its attributes should be defined as Public. 
@@ -24,87 +26,96 @@ Module
 	In processing methods, first, begin processing when active is true; then, if empty input, empty output.
 	In MIMO simulations, parallel signals are defined with cell type {}.
 
-ActiveModule
-    SourceBinary
-    +Modulate_
-	+Coder_
-	+Channel_
-	DeOverlap
-	Decision_
-	FECDecoders
-	+BERT_
+	ActiveModule
+	    SourceBinary
+		+Coder_
+		+Channel_
+		DeOverlap
+		Decision_
+		FECDecoders
+		+BERT_
 
-	Comments:
-	In ActiveModule's subclasses, methods of Init and Reset MUST be defined.
-	Before call processing method of an instance, it should be initialized by Init method, mostly passing arguments and initialize modules.
-	After a complete frame simulation, the instances of subclasses need to be reset by Reset method, before next frame simulation.
-	A Reset method resets buffer, input and output properties, and re-initialize the modules in the instance.
+		Comments:
+		In ActiveModule's subclasses, methods of Init and Reset MUST be defined.
+		Before call processing method of an instance, it should be initialized by Init method, mostly passing arguments and initialize modules.
+		After a complete frame simulation, the instances of subclasses need to be reset by Reset method, before next frame simulation.
+		A Reset method resets buffer, input and output properties, and re-initialize the modules in the instance.
 
-SourceBinary
-	Comment:
-	Structure of SourseBinary is as following:
-	Bit generation -> FEC Buffer -> FEC encoder -> Output Buffer -> Output
-	Bit generation includes three types, Random, PRBS and UserDef.
-	Random is to generate a long enough PRBS, which seems random in simulation.
-	PRBS is to generate a 2^N-1 periodic sequence. In this case, the random seed is pre-determined (9425).
-	UserDef is to adopt user defined sequence.
-	FEC Buffer is to adapt to FEC encoder input bit sequence length. Bits are buffered before long enough for a FEC encode process.
-	FEC encoder is to supports three types FEC codes, RS code, LDPC code, cascading (RS and LDPC) code.
-	Output buffer is to adapt to the global frame length.
+		SourceBinary
+			Comment:
+			Structure of SourseBinary is as following:
+			Bit generation -> FEC Buffer -> FEC encoder -> Output Buffer -> Output
+			Bit generation includes three types, Random, PRBS and UserDef.
+			Random is to generate a long enough PRBS, which seems random in simulation.
+			PRBS is to generate a 2^N-1 periodic sequence. In this case, the random seed is pre-determined (9425).
+			UserDef is to adopt user defined sequence.
+			FEC Buffer is to adapt to FEC encoder input bit sequence length. Bits are buffered before long enough for a FEC encode process.
+			FEC encoder is to supports three types FEC codes, RS code, LDPC code, cascading (RS and LDPC) code.
+			Output buffer is to adapt to the global frame length.
 
-Modulate_
-	ModulateQAM
+		Coder_
+			CoderTDM
 
-	Comments:
-	This module modelate bit sequence by specified format. 
-	BPSK is supported in Modulate_.
-	QAM is supported in ModulateQAM.
+			Comments:
+			Coder_ is an abstract class, and is to assure its subclass dealing with overlap between frames. A buffer is needed.
+			CoderTDM does nothing but overlap frames. Other Coder do embed coding function.
 
-Coder_
-	CoderTDM
+		Channel_
+			ChEleAWGN
 
-	Comments:
-	Coder_ is an abstract class, and is to assure its subclass dealing with overlap between frames. A buffer is needed.
-	CoderTDM does nothing but overlap frames. Other Coder do embed coding function.
+			Comments:
+			This module is based on AWGN model. The white gaussian REAL noise is calculated according to input signal power and SNR.
+			ChEleAWGN supports multiple input length and complex input samples. Besides, overlap between noise is supported.
 
-Channel_
-	ChEleAWGN
+		DeOverlap
+			Comments:
+			This module usually follows the channel output. 
+			The structure is as following:
+			De-overlap Buffer -> positioning -> Output
+			De-Overlap means to remove overlap part between adjacent frames.
+			Before removing, positioning is needed to pinpoint the starting and ending index of frames.
+			If no sampling cycle slip exists, positioning is calculated be global overlap length; otherwise, positioning can be dealt with by correlation.
+			Note that the overlap simulatin is between Coder_ (or its subclass), Channel, and DeOverlap.
 
-	Comments:
-	This module is based on AWGN model. The white gaussian REAL noise is calculated according to input signal power and SNR.
-	ChEleAWGN supports multiple input length and complex input samples. Besides, overlap between noise is supported.
+		Decision_
+			Comments:
+			This module is to de-modulate synchronized constellation. 
+			Demodulation handle is determined by modulation handle from Dodulate_ and its subclasses.
+			EVM calculation and display is supported.
 
-DeOverlap
-	Comments:
-	This module usually follows the channel output. 
-	The structure is as following:
-	De-overlap Buffer -> positioning -> Output
-	De-Overlap means to remove overlap part between adjacent frames.
-	Before removing, positioning is needed to pinpoint the starting and ending index of frames.
-	If no sampling cycle slip exists, positioning is calculated be global overlap length; otherwise, positioning can be dealt with by correlation.
-	Note that the overlap simulatin is between Coder_ (or its subclass), Channel, and DeOverlap.
+		FECDecoder
+			Comments:
+			The structure of this module is as following:
+			FEC decoder Buffer -> FEC decoder -> Output
+			FEC decoder Buffer is to adapt to FEC decoder input bit sequence length. Bits are buffered before long enough for a FEC decode process.
+			Several decoders are provided correspondent to FEC coder.
 
-Decision_
-	Comments:
-	This module is to de-modulate synchronized constellation. 
-	Demodulation handle is determined by modulation handle from Dodulate_ and its subclasses.
-	EVM calculation and display is supported.
+		BERT_
+			BERTAsync
 
-FECDecoder
-	Comments:
-	The structure of this module is as following:
-	FEC decoder Buffer -> FEC decoder -> Output
-	FEC decoder Buffer is to adapt to FEC decoder input bit sequence length. Bits are buffered before long enough for a FEC decode process.
-	Several decoders are provided correspondent to FEC coder.
+			Comments:
+			BERT_ is to compare two equal length inputs and calculate error bits index, number and ratio.
+			BERTAsync supports two inputs with different length. An alignment is processed before BER calculate.
+			BER calculation of uultiple signal pairs is supported, with cell structure.
+			Error Idex display and error ratio display are supported.
 
-BERT_
-	BERTAsync
+	Modulate_
+		ModulateQAM
 
-	Comments:
-	BERT_ is to compare two equal length inputs and calculate error bits index, number and ratio.
-	BERTAsync supports two inputs with different length. An alignment is processed before BER calculate.
-	BER calculation of uultiple signal pairs is supported, with cell structure.
-	Error Idex display and error ratio display are supported.
+		Comments:
+		This module modelate bit sequence by specified format. 
+		BPSK is supported in Modulate_.
+		QAM is supported in ModulateQAM.
+
+	Electrical_
+		EleLPF
+		EleQuantizer
+		EleRectPulse
+		EleSampler
+
+		This module is an abstract class. Its subclasses are modeled as electrical components.
+		
+	Optical_
 
 SignalType
 	SignalTypeElectrical
@@ -123,13 +134,3 @@ BUFFER
 	Method Input push array in buffer and Output pop array out from buffer.
 
 SetVariousProp
-
-Electrical_
-	EleLPF
-	EleQuantizer
-	EleRectPulse
-	EleSampler
-
-	This module is an abstract class. Its subclasses are modeled as electrical components.
-	
-Optical_

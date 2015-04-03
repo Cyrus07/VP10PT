@@ -12,11 +12,7 @@ classdef ModulateQAM < Modulate_
         mn  = 4
         map = 'Gray'
     end
-    properties (GetAccess = protected)
-%         Input        
-    end
     properties (SetAccess = protected)
-%         Output
 %         h
     end
     methods
@@ -24,19 +20,13 @@ classdef ModulateQAM < Modulate_
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Reset(obj)
-            obj.Input = [];
-            obj.Output = [];
-            Init(obj);
-        end
-        %%
         function Init(obj)
             SetModHandle(obj);
         end
         %%
-        function Processing(obj)
-            for n = 1:length(obj.Input)
-                obj.Output{n} = obj.h.modulate(obj.Input{n});
+        function y =Processing(obj, x)
+            for n = 1:length(x)
+                y{n} = obj.h.modulate(x{n});
             end
         end
         %%

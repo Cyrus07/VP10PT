@@ -12,7 +12,3 @@ tic
 s = RandStream('mt19937ar','Seed','shuffle');
 RandStream.setGlobalStream(s);
 clear s;
-
-Tx          = TxCoderCoh;
-Channel     = ChannelEleAWGN;
-Rx          = DecisionHard;

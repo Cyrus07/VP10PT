@@ -1,9 +1,8 @@
-classdef DecisionHard < ActiveModule
+classdef DecisionHard < Subsystem_
     %DecisionHard v1.0, Lingchen Huang, 2015/4/1
     
     properties
         nPol
-        Input
         BER
         TCErrorCount    = 200
         TCBitCount      = 2^16
@@ -29,20 +28,17 @@ classdef DecisionHard < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Processing(obj)
+        function Processing(obj, x)
             %
             % receiving and make hard decision
-            obj.Dec.Input = obj.Input;
-            obj.Dec.Processing();
+            dec = obj.Dec.Processing(x);
             
             % FEC
-            obj.FEC.Input = obj.Dec.OutputBit;
-            obj.FEC.Processing();
+            fec = obj.FEC.Processing(dec);
             
             % calculate bit error rate
             obj.BERTest.RefBits = obj.RefMsg;
-            obj.BERTest.Input = obj.FEC.Output;
-            obj.BERTest.Processing();
+            obj.BERTest.Processing(fec);
             
             % Termination condition
             if sum(obj.BERTest.ErrCount) >= obj.TCErrorCount...
@@ -68,7 +64,6 @@ classdef DecisionHard < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Input   = [];
             obj.RefMsg  = [];
             obj.BER     = [];
             Reset(obj.Dec);

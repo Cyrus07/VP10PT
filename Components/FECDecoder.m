@@ -33,8 +33,6 @@ classdef FECDecoder < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Input       = [];
-            obj.Output      = [];
             Init(obj);
         end
         %%
@@ -52,14 +50,14 @@ classdef FECDecoder < ActiveModule
             obj.Rx = BUFFER;
         end
         %%
-        function Processing(obj)
+        function y = Processing(obj, x)
             % This module must be Active
-            obj.Rx.Input(obj.Input);
-            obj.Output = [];
+            obj.Rx.Input(x);
+            y = [];
             while length(obj.Rx.Buffer) >= obj.FECCodeLen
                 CodeWord = obj.Rx.Output(obj.FECCodeLen);
                 MsgWord = obj.Decode(CodeWord);
-                obj.Output = [obj.Output; MsgWord];
+                y = [y; MsgWord];
             end
         end
         %%

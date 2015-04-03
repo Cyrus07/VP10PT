@@ -21,12 +21,6 @@ classdef DeOverlap < ActiveModule
     properties (Access = private)
         FrameBuf
     end
-    properties (GetAccess = protected)
-        Input
-    end
-    properties (SetAccess = protected)
-        Output
-    end
     
     methods
         %%
@@ -35,8 +29,6 @@ classdef DeOverlap < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Input = [];
-            obj.Output = [];
             Init(obj);
         end
         %%
@@ -46,32 +38,31 @@ classdef DeOverlap < ActiveModule
             end
         end
         %%
-        function Processing(obj)
-            obj.Output = [];
-            for n = 1:length(obj.Input)
-                if isobject(obj.Input{n})
-                    Check(obj.Input{n}, 'ElectricalSignal');
-                    inputVec = obj.Input{n}.E;
-                elseif isnumeric(obj.Input{n})
-                    inputVec = obj.Input{n};
+        function y = Processing(obj, x)
+            for n = 1:length(x)
+                if isobject(x{n})
+                    Check(x{n}, 'ElectricalSignal');
+                    inputVec = x{n}.E;
+                elseif isnumeric(x{n})
+                    inputVec = x{n};
                 end
                 % This module must be Active
                 if isempty(inputVec)
-                    obj.Output{n} = [];
+                    y{n} = [];
                     continue
                 end
                 if isempty(obj.FrameBuf{n}.Buffer)
                     obj.FrameBuf{n}.Input(inputVec);
-                    obj.Output{n} = [];
+                    y{n} = [];
                     continue;
                 end
                 if ~logical(obj.FrameOverlapRatio)
                     idx_offset1 = 0;
                     idx_offset2 = 0;
                 else
-                    CorrLen = length(obj.Input{n}.E) * obj.FrameOverlapRatio;
+                    CorrLen = length(x{n}.E) * obj.FrameOverlapRatio;
                     rx1 = obj.FrameBuf{n}.Buffer(end-CorrLen+1:end);
-                    rx2 = obj.Input{n}.E(1:CorrLen);
+                    rx2 = x{n}.E(1:CorrLen);
                     % do correlation
                     xcorrel = abs(ifft(fft(conj(flipud(rx1))).*fft(rx2)))/CorrLen;
                     [maxCorr, Idx] = max(xcorrel);
@@ -89,7 +80,7 @@ classdef DeOverlap < ActiveModule
                 
                 buf = obj.FrameBuf{n}.Output;
                 obj.FrameBuf{n}.Input(inputVec(idx_offset2+1:end));
-                obj.Output{n} = buf(1:end-idx_offset1);
+                y{n} = buf(1:end-idx_offset1);
             end
         end
     end

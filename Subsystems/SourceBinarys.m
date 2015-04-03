@@ -1,4 +1,4 @@
-classdef SourceBinarys < ActiveModule
+classdef SourceBinarys < Subsystem_
     %SourceBinarys v1.0, Lingchen Huang, 2015/3/16
     %
     %
@@ -18,7 +18,6 @@ classdef SourceBinarys < ActiveModule
     end
     
     properties (SetAccess = private)
-        Output
         RefMsg
         BinarySource
     end
@@ -30,7 +29,6 @@ classdef SourceBinarys < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Output       = [];
             obj.RefMsg    = [];
             Init(obj);
         end
@@ -47,11 +45,10 @@ classdef SourceBinarys < ActiveModule
             end
         end
         %%
-        function Processing(obj)
+        function y = Processing(obj)
             obj.RefMsg = [];
             for n = 1 : obj.nSource
-                Processing(obj.BinarySource{n});
-                obj.Output{n} = obj.BinarySource{n}.Output;
+                y{n} = obj.BinarySource{n}.Processing;
                 obj.RefMsg{n} = obj.BinarySource{n}.MsgBuffer.Output;
             end
         end

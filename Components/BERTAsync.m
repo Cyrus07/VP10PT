@@ -22,9 +22,6 @@ classdef BERTAsync < BERT_
         DispIdx = false
         DispBER = false
     end
-    properties (GetAccess = protected)
-        %         Input
-    end
     properties (Access = protected)
         RxBuf
         RefBuf
@@ -37,7 +34,6 @@ classdef BERTAsync < BERT_
         end
         %%
         function Reset(obj)
-            obj.Input    = [];
             obj.ErrCount = [];
             obj.BitCount = [];
             obj.ErrRatio = Inf;
@@ -53,17 +49,17 @@ classdef BERTAsync < BERT_
             end
         end
         %%
-        function Processing(obj)
+        function Processing(obj, x)
             obj.Count = obj.Count + 1;
             ec = 0;
             er = nan;
             for n = 1:obj.nPol
                 obj.RefBuf{n}.Input(obj.RefBits{n});
-                if isempty(obj.Input{n})
+                if isempty(x{n})
                     continue;
                 end
                 if isempty(obj.RxBuf{n}.Buffer)
-                    obj.RxBuf{n}.Input(obj.Input{n});
+                    obj.RxBuf{n}.Input(x{n});
                     % align obj.RxBuf and obj.RefBuf
                     Sync(obj, n);
                 end
@@ -74,7 +70,7 @@ classdef BERTAsync < BERT_
                 obj.ErrIdx{n} = Idx;
             end
             obj.ErrCount(obj.Count) = sum(ec);
-            obj.BitCount(obj.Count) = length(obj.Input)*length(obj.Input{1});
+            obj.BitCount(obj.Count) = length(x)*length(x{1});
             obj.ErrRatio(obj.Count) = mean(er);
             ShowIdx(obj);
             ShowBER(obj);
