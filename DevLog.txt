@@ -14,6 +14,7 @@ hgsetget
 
 Module
 	SignalType
+	SignalAnalyzer
 	BUFFER
 	+ActiveModule
     +Modulate_
@@ -36,7 +37,14 @@ Module
 		Two types of signal are supported.
 		SignalType is an abstract class. It ensures two methods of Check and Copy for its subclass.
 		SignalTypeElectrical is for Electrical signal type. Except for fs (sampling rate) and E (signal field), Rs is for Symbol Rate.
-		SignalTypeOptical is for Optical signal type. Except for fs (sampling rate) and E (signal field), fc, Azi, Ell are defined for center freuqency, azimuth, and ellipticity.
+		SignalTypeOptical is for Optical signal type. Except for fs (sampling rate), Rs (symbol rate) and E (signal field), fc  is defined for center freuqency.
+
+	SignalAnalyzer
+		Comments:
+		This module is to creat diagrams, e.g. eyediagram, constellation, poincare sphere, etc., according to the corresponding data type. 
+		For digital signal (a numerical array), it creats constellation, and spectrum of it.
+		For electrical signal, it creats eyediagram, and spectrum.
+		For optical signal, it creates eyediagram, poincare sphere, and otpical spectrum.
 
 	BUFFER
 		Comments:
@@ -52,6 +60,7 @@ Module
 		Decision_
 		FECDecoders
 		+BERT_
+		OpticalLaserCW
 
 		Comments:
 		In ActiveModule's subclasses, methods of Init and Reset MUST be defined.
@@ -117,6 +126,13 @@ Module
 			BER calculation of uultiple signal pairs is supported, with cell structure.
 			Error Idex display and error ratio display are supported.
 
+		OpticalLaserCW
+			Comments:
+			OpticalLaserCW is to generate CW laser field with designated center frequency, optical power, linewidth, SOP (state of polarization), etc..
+			The azimuth and ellipticity is used to design polarization rotator. 
+			Phase noise is buffered for overlap frame simulation.
+
+
 	Modulate_
 		ModulateQAM
 
@@ -134,6 +150,19 @@ Module
 		This module is an abstract class. Its subclasses are modeled as electrical components.
 		
 	Optical_
+		OpticalCombiner
+		OpticalLaser
+		OpticalModMz
+		OpticalIQ
+		OpticalDualPolIQ
+		OpticalPhaseShifter
+		OpticalPolCombiner
+		OpticalPolCtrl
+		OpticalPolLnr
+		OpticalPolRttr
+
+		Comments:
+		This is an abstract class. Its subclasses are moduled as optical components.
 
 	Subsystem_
 
