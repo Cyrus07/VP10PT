@@ -14,8 +14,7 @@ classdef OpticalModDualPolIQ < Optical_
         ModDepth
     end
     properties (SetAccess = private)
-        IQ1
-        IQ2
+        IQ
         PBS
     end
     
@@ -28,7 +27,7 @@ classdef OpticalModDualPolIQ < Optical_
         
         function Init(obj)
             obj.PBS = OpticalPolSplitter('DeviceAngle', obj.DeviceAngle);
-            obj.IQ1 = OpticalModIQ('ExRatioParent', obj.ExRatioParent, ...
+            obj.IQ{1} = OpticalModIQ('ExRatioParent', obj.ExRatioParent, ...
                 'ExRatioChild', obj.ExRatioChild, ...
                 'PhaseShift', obj.PhaseShift, ...
                 'PushPull', obj.PushPull, ...
@@ -36,7 +35,7 @@ classdef OpticalModDualPolIQ < Optical_
                 'VpiDC', obj.VpiDC, ...
                 'Bias', obj.Bias,...
                 'ModDepth', obj.ModDepth);
-            obj.IQ2 = OpticalModIQ('ExRatioParent', obj.ExRatioParent, ...
+            obj.IQ{2} = OpticalModIQ('ExRatioParent', obj.ExRatioParent, ...
                 'ExRatioChild', obj.ExRatioChild, ...
                 'PhaseShift', obj.PhaseShift, ...
                 'PushPull', obj.PushPull, ...
@@ -46,17 +45,19 @@ classdef OpticalModDualPolIQ < Optical_
                 'ModDepth', obj.ModDepth);
         end
         
-        function y = Processing(obj, x, rf1, rf2)
+        function y = Processing(obj, x, rf)
             Check(x, 'OpticalSignal');
-            Check(rf1, 'ElectricalSignal');
-            Check(rf2, 'ElectricalSignal');
             y = Copy(x);
             
             if obj.Active
                 xpbs = obj.PBS.Processing(x);
-                part1 = obj.IQ1.Processing(xpbs{1},rf1);
-                part2 = obj.IQ2.Processing(xpbs{2},rf2);
-                y = OpticalCombiner.Processing(part1,part2);
+                
+                for npol = 1:length(rf)
+                    Check(rf{npol}, 'ElectricalSignal');
+                    iq{npol} = obj.IQ{npol}.Processing(xpbs{npol},rf{npol});
+                end
+                
+                y = OpticalCombiner.Processing(iq{1:npol});
             else
                 y.E = x.E;
             end

@@ -40,8 +40,7 @@ classdef SignalAnalyzer < Module
                         obj.eyeDiag(am_cmp, x.Rs, x.fs / x.Rs, obj.PlotType);
                         
                         % square-law and normalize for evelope detection
-                        am_sqr = abs(am).^2;
-                        am_nlz = am_sqr / max(am_sqr);
+                        am_nlz = am / mean(abs(am).^2);
                         % Spectrum
                         obj.Spectrum(am_nlz, x.fs, 'Electrical Signal');
                         
@@ -55,15 +54,14 @@ classdef SignalAnalyzer < Module
                             obj.eyeDiag(am_cmp, x.Rs, x.fs / x.Rs, obj.PlotType);
                         end
                         
+                        % square-law and normalize for evelope detection
+                        am_nlz = am / mean(abs(am).^2);
+                        % Spectrum
+                        obj.Spectrum(am_nlz, x.fs, 'Optical Signal');
+                        
                         % Sphere
                         h = obj.poincareSphere;
                         obj.polarizationAnalyzer(h, 'on', x.E, 'ro');
-                        
-                        % square-law and normalize for evelope detection
-                        am_sqr = abs(am).^2;
-                        am_nlz = am / max(am_sqr);
-                        % Spectrum
-                        obj.Spectrum(am_nlz, x.fs, 'Optical Signal');
                 end
             end
 

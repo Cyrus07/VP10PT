@@ -2,11 +2,11 @@ InitSim;
 
 obj = CohOptB2B;
 Init(obj);
-Log.SNR = [3:9];
+% Log.SNR = [16:20];
 
-% Log.SNR = 9;
+Log.SNR = 50;
 for id_SNR = 1:length(Log.SNR)
-    obj.Channel.Ch.SNR = Log.SNR(id_SNR);
+    obj.Channel.Ch.OSNR = Log.SNR(id_SNR);
     Processing(obj);
     Log.BER(id_SNR) = obj.Rx.BER;
     disp(['SNR = ',num2str(Log.SNR(id_SNR))])

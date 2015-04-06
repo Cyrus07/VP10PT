@@ -1,14 +1,14 @@
 function eyeDiag(obj, data, symrate, nsamp, type)
 % creat an eye_scope and plot
 eyeDiag = commscope.eyediagram;
-eyeDiag.SamplesPerSymbol  = nsamp;
-eyeDiag.SamplingFrequency = nsamp*symrate;
-eyeDiag.PlotType          = type;
-eyeDiag.AmplitudeResolution  = 0.01;
-eyeDiag.NumberOfStoredTraces = 400;
-eyeDiag.ColorScale        = 'Log';
-eyeDiag.RefreshPlot       = 'on';
-eyeDiag.SymbolsPerTrace   = 4;
+eyeDiag.SamplesPerSymbol    = nsamp;
+eyeDiag.SamplingFrequency   = nsamp*symrate;
+eyeDiag.PlotType            = type;
+eyeDiag.AmplitudeResolution = 0.01;
+eyeDiag.NumberOfStoredTraces= 400;
+eyeDiag.ColorScale          = 'Log';
+eyeDiag.RefreshPlot         = 'on';
+eyeDiag.SymbolsPerTrace     = 4;
 
 if isreal(data(1))
     eyeDiag.MaximumAmplitude  = 1.1;
@@ -21,9 +21,11 @@ else
     update(eyeDiag, data./mean(abs(data)));
 end
 
-% specify the colormap of the eye_scope
-cmap = colormap(obj.ColorMap);
-% black backgroup
-cmap(1,:) = [0 0 0];
-plot(eyeDiag, cmap)
+if strcmpi(obj.PlotType,'2D Color')
+    % specify the colormap of the eye_scope
+    cmap = colormap(obj.ColorMap);
+    % black backgroup
+    cmap(1,:) = [0 0 0];
+    plot(eye, cmap)
+end
 end
