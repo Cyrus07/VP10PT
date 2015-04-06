@@ -10,7 +10,7 @@ if nargin<2
 end
 
 a = x.E;
-y = mean(sum(abs(a).^2));
+y = mean(sum(abs(a).^2,2));
 
 if dbm
     ydisp = 10 * log10(1000*y);

@@ -1,4 +1,4 @@
-classdef OpticalPolRttr < Module
+classdef OpticalPolRttr < Optical_
     %PolRotator v1.0, Lingchen Huang, 2015/4/1
     
     properties
@@ -31,18 +31,6 @@ classdef OpticalPolRttr < Module
                     sin(theta)*exp(-1i*phi/2)  cos(theta)*exp(1i*phi/2)];
                 
                 y.E = x.E * obj.JonesMatrix.';
-                
-                Azi = obj.Azimuth + x.Azi;
-                while abs(Azi)>90
-                    Azi = (abs(Azi)-180) * sign(Azi);
-                end
-                y.Azi = Azi;
-                
-                Ell = obj.Ellipticity + x.Ell;
-                while abs(Ell)>45
-                    Ell = (abs(Azi)-90) * sign(Azi);
-                end
-                y.Ell = Ell;
                 
             else
                 y.E = x.E;

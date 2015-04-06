@@ -2,7 +2,7 @@ classdef CohOptB2B < Project_
     %EleB2B   v1.0, Lingchen Huang, 2015/4/1
     
     properties
-        nPol = 1;
+        nPol = 2;
         BitPerSymbol = 2;
         FrameLen = 4 * 2^10;            % [syms]
         FrameOverlapLen = 2 * 2^10;     % [syms]
@@ -11,6 +11,7 @@ classdef CohOptB2B < Project_
         Tx
         Channel
         Rx
+        Scope
     end
     methods
         %%
@@ -32,13 +33,13 @@ classdef CohOptB2B < Project_
             obj.Channel.nPol = obj.nPol;
             obj.Channel.FrameOverlapRatio = obj.FrameOverlapLen / obj.FrameLen;
             obj.Channel.SymbolRate = 28e9;
-            obj.Channel.TxSamplingRate = 28e9 * 1;
-            obj.Channel.TxBandwidth = 50e9;
-            obj.Channel.TxFilterShape = 'Gaussian';
-            obj.Channel.TxFilterDomain = 'TD';
-            obj.Channel.RxBandwidth = 50e9;
-            obj.Channel.RxFilterShape = 'Gaussian';
-            obj.Channel.RxFilterDomain = 'TD';
+            obj.Channel.TxSamplingRate = 28e9 * 8;
+            obj.Channel.TxBandwidth = 20e9;
+            obj.Channel.TxFilterShape = 'Bessel';
+            obj.Channel.TxFilterDomain = 'FD';
+            obj.Channel.RxBandwidth = 20e9;
+            obj.Channel.RxFilterShape = 'Bessel';
+            obj.Channel.RxFilterDomain = 'FD';
             obj.Channel.RxSamplingRate = 28e9 * 1;
             obj.Channel.SamplingPhase = 1;
             obj.Channel.ChBufLen = obj.FrameLen * 1;
@@ -48,6 +49,8 @@ classdef CohOptB2B < Project_
             obj.Rx.FECType = obj.Tx.PRBS.BinarySource{1}.FECType;
             obj.Rx.hMod = obj.Tx.Mod.h;
             Init(obj.Rx);
+            
+            obj.Scope = SignalAnalyzer;
         end
         %%
         function Processing(obj)

@@ -1,4 +1,4 @@
-classdef OpticalPolLnr < Module
+classdef OpticalPolLnr < Optical_
     %POLARIZERLINEAR Summary of this class goes here
     %   This ideal linear polarizer contains 3 steps: rotate the
     %   transmission axis to the device axis (-theta); pass the signal throught a
@@ -15,13 +15,14 @@ classdef OpticalPolLnr < Module
     end
     
     methods
-        function this = OpticalPolLnr(varargin)
-            SetVariousProp(this, varargin{:})
+        function obj = OpticalPolLnr(varargin)
+            SetVariousProp(obj, varargin{:})
+            Init(obj)
         end
         
-        function reset(this)
-            theta = this.norm_azimuth;
-            this.JonesMatrix = ...
+        function Init(obj)
+            theta = obj.norm_azimuth;
+            obj.JonesMatrix = ...
                 [cos(theta) -sin(theta); ...
                 sin(theta) cos(theta)] * ...
                 [1 0; 0 0] * ...
@@ -29,13 +30,10 @@ classdef OpticalPolLnr < Module
                 sin(-theta) cos(-theta)];
         end
         
-        function y = Output(this, x)
-            if this.Active
-                reset(this)
-                y = copy(x);
-                y.E = this.JonesMatrix * x.E;
-                y.Azi = this.DeviceAngle;
-                y.Ell = 0;
+        function y = Processing(obj, x)
+            if obj.Active
+                y = Copy(x);
+                y.E = x.E * obj.JonesMatrix.';
             else
                 y = x;
             end
@@ -44,13 +42,13 @@ classdef OpticalPolLnr < Module
     
     methods (Access = private)
         % nomarlize the device angle and convert it to radian
-        function y = norm_azimuth(this)
-            x = this.DeviceAngle;
+        function y = norm_azimuth(obj)
+            x = obj.DeviceAngle;
             while abs(x) > 90
                 x = (abs(x)-180) * sign(x);
             end
             y = x*pi/180;
-            this.DeviceAngle = x;
+            obj.DeviceAngle = x;
         end
         % the range for device angle is -90:+90
     end

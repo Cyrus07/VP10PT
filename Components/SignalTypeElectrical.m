@@ -1,7 +1,6 @@
 classdef SignalTypeElectrical < SignalType
     %SignalTypeElectrical v1.0, Lingchen Huang, 2015/3/16
     properties
-        Rs = []
     end
     methods
         

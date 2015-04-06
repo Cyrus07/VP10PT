@@ -27,6 +27,7 @@ classdef OpticalLaserCW < Optical_ & ActiveModule
     methods 
         function obj = OpticalLaserCW(varargin)
             SetVariousProp(obj, varargin{:})
+            Init(obj);
         end
         %%
         function Reset(obj)
@@ -34,7 +35,7 @@ classdef OpticalLaserCW < Optical_ & ActiveModule
         end
         %%
         function Init(obj)
-            if isemtpy(obj.RandomNumberSeed)
+            if isempty(obj.RandomNumberSeed)
                 obj.RandomNumberSeed = randi([1,1e9],1);
             end
             obj.PC = OpticalPolRttr('Azimuth', obj.Azimuth, ...
@@ -68,11 +69,11 @@ classdef OpticalLaserCW < Optical_ & ActiveModule
                 .* exp(1j*obj.Phase.Buffer);
             
             % generate a x polarized light
-            cwLaser = OpticalSignal('E',[cwLaser, zeros(size(cwLaser))],...
+            cwLaser = SignalTypeOptical('E',[cwLaser, zeros(size(cwLaser))],...
                 'fc',obj.CenterFrequency,'fs',obj.SamplingRate);
             
             % control the polarization
-            cwLaser = obj.PC.Output(cwLaser);
+            cwLaser = obj.PC.Processing(cwLaser);
             
             optPowerMeter(cwLaser,1);
         end     

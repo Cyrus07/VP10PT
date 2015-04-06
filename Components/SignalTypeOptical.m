@@ -4,8 +4,6 @@ classdef SignalTypeOptical < SignalType
     
     properties
         fc  = 193.1e12
-        Azi = 0
-        Ell = 0
     end
     
     properties (Dependent, SetAccess = private)
@@ -22,7 +20,7 @@ classdef SignalTypeOptical < SignalType
         
         function ex = get.Ex(obj)
             if ~isempty(obj.E)
-                ex = obj.E(1,:);
+                ex = obj.E(:,1);
             else 
                 ex = [];
             end
@@ -30,7 +28,7 @@ classdef SignalTypeOptical < SignalType
         
         function ey = get.Ey(obj)
             if ~isempty(obj.E)
-                ey = obj.E(2,:);
+                ey = obj.E(:,2);
             else
                 ey = [];
             end
@@ -38,10 +36,9 @@ classdef SignalTypeOptical < SignalType
         
         function x = Copy(obj)
             x       = SignalTypeOptical;
-            x.fc    = obj.fc;
-            x.Azi   = obj.Azi;
-            x.Ell   = obj.Ell;
             x.fs    = obj.fs;
+            x.Rs    = obj.Rs;
+            x.fc    = obj.fc;
         end
     end
     

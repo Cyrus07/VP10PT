@@ -4,6 +4,7 @@ classdef SignalType < Module
     %%
     properties
         E  = []
+        Rs = []
         fs = []
     end
     

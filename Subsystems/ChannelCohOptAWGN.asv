@@ -3,6 +3,8 @@ classdef ChannelCohOptAWGN < Subsystem_
     
     properties
         nPol
+        Input
+        Output
         FrameOverlapRatio
         % Tx DSP
         
@@ -26,13 +28,10 @@ classdef ChannelCohOptAWGN < Subsystem_
         TxLaserInitPhase
         TxLaserFrequency
         % IQ Modulator
-        ModDeviceAngle
-        ModPhaseShift
+        PhaseShift
         VpiRf
         VpiDC
-        ExRatioParent
-        ExRatioChild
-        ModBias
+        ExRatio
         ModDepth
         % Opt AWGN Channel
         Ch
@@ -89,9 +88,10 @@ classdef ChannelCohOptAWGN < Subsystem_
             dac = obj.DAC.Processing(x);
             rect = obj.Rectpulse.Processing(dac);
             lpftx = obj.LPFTx.Processing(rect);
-            cwtx = obj.LaserTx.Processing(length(lpftx{1}.E));
-            tx = obj.Mod.Processing(cwtx, lpftx{1}, lpftx{2});
-%             obj.Scope.Processing(tx)
+            cwtx = obj.LaserTx.Processing(length(x{1}));
+            cwtxs = obj.PBS.Processing(cwtx);
+            tx{pol} = obj.Mod.Processing(cwtxs{pol}, lpftx{pol});
+%             obj.Scope.Processing(cwtx)
             ch = obj.Ch.Processing(lpftx);
             lpfrx = obj.LPFRx.Processing(ch);
             sampler = obj.Sampler.Processing(lpfrx);
@@ -113,13 +113,10 @@ classdef ChannelCohOptAWGN < Subsystem_
                 'OutputPower', obj.TxLaserPower ,...
                 'Linewidth', obj.TxLaserLinewidth ,...
                 'InitialPhase', obj.TxLaserInitPhase);
-            obj.Mod         = OpticalModDualPolIQ('DeviceAngle', obj.ModDeviceAngle,...
-                'PhaseShift', obj.ModPhaseShift, ...
-                'ExRatioParent', obj.ExRatioParent, ...
-                'ExRatioChild', obj.ExRatioChild, ...
-                'VpiRf', obj.VpiRf, ...
+            obj.Mod         = OpticalModDualPolIQ('DeviceAngle', obj.DeviceAngle,...
+                'ExRatio', obj.ExRatio, ...
+                'Vpi', obj.VpiRf, ...
                 'VpiDC', obj.VpiDC, ...
-                'Bias', obj.ModBias,...
                 'ModDepth', obj.ModDepth);
             obj.Ch          = ChEleAWGN('nPol', obj.nPol,...
                 'BufLen', obj.ChBufLen,...
