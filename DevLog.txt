@@ -89,6 +89,7 @@ Module
 
 		Channel_
 			ChEleAWGN
+			ChOptAWGN
 
 			Comments:
 			This module is based on AWGN model. The white gaussian REAL noise is calculated according to input signal power and SNR.
