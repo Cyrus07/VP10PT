@@ -16,12 +16,6 @@ classdef Channel_ < ActiveModule
     properties (Access = protected)
         noise
     end
-    properties (GetAccess = protected)
-        Input
-    end
-    properties (SetAccess = protected)
-        Output
-    end
     
     methods
         %%
@@ -30,26 +24,24 @@ classdef Channel_ < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Reset(obj)
-            obj.Input = [];
-            obj.Output = [];
+        function Reset(~)
         end
         %%
         function Init(~)
         end
         %%
-        function Processing(obj)
+        function y = Processing(obj, x)
             % Only digital and electrical signal type (object) is supported
-            Check(obj.Input, 'ElectricalSignal');
-            obj.Output = Copy(obj.Input);
+            Check(x, 'ElectricalSignal');
+            y = Copy(x);
             if ~obj.Active
-                obj.Output.E = obj.Input.E;
+                y.E = x.E;
             end
-            if isempty(obj.Input{n}.E)
+            if isempty(x{n}.E)
                 return;
             end
             noiseCalc(obj);
-            obj.Output.E = obj.Input.E + obj.noise;
+            y.E = x.E + obj.noise;
         end
         %%
         function noiseCalc(obj)

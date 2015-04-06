@@ -51,8 +51,7 @@ classdef SourceBinary < ActiveModule
         end
         %%
         function Reset(obj)
-            obj.Count       = 0;
-            obj.Output      = [];
+            obj.Count = 0;
             Init(obj);
         end
         %%
@@ -75,7 +74,7 @@ classdef SourceBinary < ActiveModule
             end
         end
         %%
-        function Processing(obj)
+        function y = Processing(obj)
             obj.Count = obj.Count + 1;
             if obj.Count == 1
                 obj.bitseqlen = obj.BitseqLen(1);
@@ -92,7 +91,7 @@ classdef SourceBinary < ActiveModule
                 obj.BitsBuffer.Input(CodeWord);
                 obj.MsgBuffer.Input(MsgWord);
             end
-            obj.Output = obj.BitsBuffer.Output(obj.bitseqlen);
+            y = obj.BitsBuffer.Output(obj.bitseqlen);
         end
         %%
         function Bits = GetBitseq(obj)

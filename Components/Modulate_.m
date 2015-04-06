@@ -1,4 +1,4 @@
-classdef Modulate_ < ActiveModule
+classdef Modulate_ < Module
     %Modulate_ v1.0, Lingchen Huang, 2015/3/16
     %
     %
@@ -9,11 +9,7 @@ classdef Modulate_ < ActiveModule
     %
     %
     %%
-    properties (GetAccess = protected)
-        Input        
-    end
     properties (SetAccess = protected)
-        Output
         h
     end
     methods
@@ -22,18 +18,12 @@ classdef Modulate_ < ActiveModule
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Reset(obj)
-            obj.Input = [];
-            obj.Output = [];
-            Init(obj);
-        end
-        %%
         function Init(obj)
             SetModHandle(obj);
         end
         %%
-        function Processing(obj)
-            obj.Output = obj.h.modulate(obj.Input);
+        function y = Processing(obj, x)
+            y = obj.h.modulate(x);
         end
         %%
         function SetModHandle(obj)

@@ -2,8 +2,6 @@ Class Tree
 
 hgsetget
 	Module
-	SignalType
-	BUFFER
 
 	Comments:
 	hgsetget is a subclass of handle class.
@@ -11,124 +9,134 @@ hgsetget
 	A handle is a reference to an object. 
 	If you copy an object's handle, MATLAB copies only the handle and both the original and copy refer to the same object data. 
 	If a function modifies a handle object passed as an input argument, the modification affects the original input object.
-
-Module
-	+ActiveModule
-	+Electrical_
-
-	Comments:
-	In self-defined classes (Module and subclass of it), a property that needs to be initialized from outside the class, its attribute should be defined as Public. 
-	Or the attribute is defined as needed.
 	In self-defined classes (A), DO NOT initialize a class property as another self-defined class (B), e.g. BUFFER. 
 	This would result in a problem that properties from several instances of this class (A) would share handles to the same initilized self-defined class (B).
-	In processing methods, first, begin processing when active is true; then, if empty input, empty output.
-	One signal pipe is defined with cell type {}. Then multi-input and/or multi output simulation can be easily extended.
 
-ActiveModule
-    SourceBinary
+Module
+	SignalType
+	BUFFER
+	+ActiveModule
     +Modulate_
-	+Coder_
-	+Channel_
-	DeOverlap
-	Decision_
-	FECDecoders
-	+BERT_
+	+Electrical_
+	+Optical_
+	+Subsystem_
+	+Project_
 
 	Comments:
-	In ActiveModule and its subclasses, an instance initialize its properties by first run, which is indicated by Count property.
-	When one thorough BER estimate is finished, all subclasses of ActiveModule need reset (Reset method).
-	A subclass of ActiveModule reset itself by Reset method. A Reset method resets buffer, Count, input and output properties.
+	In self-defined classes (Module and subclass of it), a property that needs to be initialized from outside the class, its attributes should be defined as Public. 
+	Or the attributes are defined as needed.
+	In processing methods, first, begin processing when active is true; then, if empty input, empty output.
+	In MIMO simulations, parallel signals are defined with cell type {}.
 
-SourceBinary
-	Comment:
-	Structure of SourseBinary is as following:
-	Bit generation -> FEC Buffer -> FEC encoder -> Output Buffer -> Output
-	Bit generation includes three types, Random, PRBS and UserDef.
-	Random is to generate a long enough PRBS, which seems random in simulation.
-	PRBS is to generate a 2^N-1 periodic sequence. In this case, the random seed is pre-determined (9425).
-	UserDef is to adopt user defined sequence.
-	FEC Buffer is to adapt to FEC encoder input bit sequence length. Bits are buffered before long enough for a FEC encode process.
-	FEC encoder is to supports three types FEC codes, RS code, LDPC code, cascading (RS and LDPC) code.
-	Output buffer is to adapt to the global frame length.
+	SignalType
+		SignalTypeElectrical
+		SignalTypeOptical
 
-Modulate_
-	ModulateQAM
+		Comments:
+		Two types of signal are supported.
+		SignalType is an abstract class. It ensures two methods of Check and Copy for its subclass.
+		SignalTypeElectrical is for Electrical signal type. Except for fs (sampling rate) and E (signal field), Rs is for Symbol Rate.
+		SignalTypeOptical is for Optical signal type. Except for fs (sampling rate) and E (signal field), fc, Azi, Ell are defined for center freuqency, azimuth, and ellipticity.
 
-	Comments:
-	This module modelate bit sequence by specified format. 
-	BPSK is supported in Modulate_.
-	QAM is supported in ModulateQAM.
+	BUFFER
+		Comments:
+		This module works as a buffer. 
+		When property "length" is assigned, the buffer can only buffer "length" length array. Overflow part is discarded.
+		Method Input push array in buffer and Output pop array out from buffer.
 
-Coder_
-	CoderTDM
+	ActiveModule
+	    SourceBinary
+		+Coder_
+		+Channel_
+		DeOverlap
+		Decision_
+		FECDecoders
+		+BERT_
 
-	Comments:
-	Coder_ is an abstract class, and is to assure its subclass dealing with overlap between frames. A buffer is needed.
-	CoderTDM does nothing but overlap frames. Other Coder do embed coding function.
+		Comments:
+		In ActiveModule's subclasses, methods of Init and Reset MUST be defined.
+		Before call processing method of an instance, it should be initialized by Init method, mostly passing arguments and initialize modules.
+		After a complete frame simulation, the instances of subclasses need to be reset by Reset method, before next frame simulation.
+		A Reset method resets buffer, input and output properties, and re-initialize the modules in the instance.
 
-Channel_
-	ChEleAWGN
+		SourceBinary
+			Comment:
+			Structure of SourseBinary is as following:
+			Bit generation -> FEC Buffer -> FEC encoder -> Output Buffer -> Output
+			Bit generation includes three types, Random, PRBS and UserDef.
+			Random is to generate a long enough PRBS, which seems random in simulation.
+			PRBS is to generate a 2^N-1 periodic sequence. In this case, the random seed is pre-determined (9425).
+			UserDef is to adopt user defined sequence.
+			FEC Buffer is to adapt to FEC encoder input bit sequence length. Bits are buffered before long enough for a FEC encode process.
+			FEC encoder is to supports three types FEC codes, RS code, LDPC code, cascading (RS and LDPC) code.
+			Output buffer is to adapt to the global frame length.
 
-	Comments:
-	This is a AWGN model. The white gaussian REAK noise is calculated according to input signal power and SNR.
-	ChEleAWGN supports multiple input length and complex input samples. Besides, overlap between noise is supported.
+		Coder_
+			CoderTDM
 
-DeOverlap
-	Comments:
-	This module usually follows the channel output. 
-	The structure is as following:
-	De-overlap Buffer -> positioning -> Output
-	De-Overlap means to remove overlap part between adjacent frames.
-	Before removing, positioning is needed to pinpoint the starting and ending index of frames.
-	If no sampling cycle slip exists, positioning is calculated be global overlap length; otherwise, positioning can be dealt with by correlation.
-	Note that the overlap simulatin is between Coder_ (or its subclass), Channel, and DeOverlap.
+			Comments:
+			Coder_ is an abstract class, and is to assure its subclass dealing with overlap between frames. A buffer is needed.
+			CoderTDM does nothing but overlap frames. Other Coder do embed coding function.
 
-Decision_
-	Comments:
-	This module is to de-modulate synchronized constellation. 
-	Demodulation handle is determined by modulation handle from Dodulate_ and its subclasses.
-	EVM calculation and display is supported.
+		Channel_
+			ChEleAWGN
 
-FECDecoder
-	Comments:
-	The structure of this module is as following:
-	FEC decoder Buffer -> FEC decoder -> Output
-	FEC decoder Buffer is to adapt to FEC decoder input bit sequence length. Bits are buffered before long enough for a FEC decode process.
-	Several decoders are provided correspondent to FEC coder.
+			Comments:
+			This module is based on AWGN model. The white gaussian REAL noise is calculated according to input signal power and SNR.
+			ChEleAWGN supports multiple input length and complex input samples. Besides, overlap between noise is supported.
 
-BERT_
-	BERTAsync
+		DeOverlap
+			Comments:
+			This module usually follows the channel output. 
+			The structure is as following:
+			De-overlap Buffer -> positioning -> Output
+			De-Overlap means to remove overlap part between adjacent frames.
+			Before removing, positioning is needed to pinpoint the starting and ending index of frames.
+			If no sampling cycle slip exists, positioning is calculated be global overlap length; otherwise, positioning can be dealt with by correlation.
+			Note that the overlap simulatin is between Coder_ (or its subclass), Channel, and DeOverlap.
 
-	Comments:
-	BERT_ is to compare two equal length inputs and calculate error bits index, number and ratio.
-	BERTAsync supports two inputs with different length. An alignment is processed before BER calculate.
-	BER calculation of uultiple signal pairs is supported, with cell structure.
-	Error Idex display and error ratio display are supported.
+		Decision_
+			Comments:
+			This module is to de-modulate synchronized constellation. 
+			Demodulation handle is determined by modulation handle from Dodulate_ and its subclasses.
+			EVM calculation and display is supported.
 
-SignalType
-	SignalTypeElectrical
-	SignalTypeOptical
+		FECDecoder
+			Comments:
+			The structure of this module is as following:
+			FEC decoder Buffer -> FEC decoder -> Output
+			FEC decoder Buffer is to adapt to FEC decoder input bit sequence length. Bits are buffered before long enough for a FEC decode process.
+			Several decoders are provided correspondent to FEC coder.
 
-	Comments:
-	Two types of signal are supported.
-	SignalType is an abstract class. It ensures two methods of Check and Copy for its subclass.
-	SignalTypeElectrical is for Electrical signal type. Except for fs (sampling rate) and E (signal field), Rs is for Symbol Rate.
-	SignalTypeOptical is for Optical signal type. Except for fs (sampling rate) and E (signal field), fc, Azi, Ell are defined for center freuqency, azimuth, and ellipticity.
+		BERT_
+			BERTAsync
 
-BUFFER
-	Comments:
-	This module works as a buffer. 
-	When property "length" is assigned, the buffer can only buffer "length" length array. Overflow part is discarded.
-	Method Input push array in buffer and Output pop array out from buffer.
+			Comments:
+			BERT_ is to compare two equal length inputs and calculate error bits index, number and ratio.
+			BERTAsync supports two inputs with different length. An alignment is processed before BER calculate.
+			BER calculation of uultiple signal pairs is supported, with cell structure.
+			Error Idex display and error ratio display are supported.
 
-SetVariousProp
+	Modulate_
+		ModulateQAM
 
-Electrical_
-	EleLPF
-	EleQuantizer
-	EleRectPulse
-	EleSampler
+		Comments:
+		This module modelate bit sequence by specified format. 
+		BPSK is supported in Modulate_.
+		QAM is supported in ModulateQAM.
 
-	This module is an abstract class. Its subclasses are modeled as electrical components.
+	Electrical_
+		EleLPF
+		EleQuantizer
+		EleRectPulse
+		EleSampler
+
+		This module is an abstract class. Its subclasses are modeled as electrical components.
+		
+	Optical_
+
+	Subsystem_
+
+	Project_
 	
-Optical_
+SetVariousProp

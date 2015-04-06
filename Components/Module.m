@@ -6,12 +6,6 @@ classdef Module < hgsetget
     properties
         Active 	= true
     end
-%     properties (GetAccess = protected)
-%         Input
-%     end
-%     properties (SetAccess = protected)
-%         Output
-%     end
     methods 
     end
     

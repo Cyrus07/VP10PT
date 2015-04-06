@@ -1,4 +1,4 @@
-classdef BUFFER < hgsetget
+classdef BUFFER < Module
 %   BUFFER v1.0, Lingchen Huang, 2015/3/16
     
     properties

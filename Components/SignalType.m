@@ -1,4 +1,4 @@
-classdef SignalType < hgsetget 
+classdef SignalType < Module 
     %SignalType v1.0, Lingchen Huang, 2015/3/16
     %
     %%

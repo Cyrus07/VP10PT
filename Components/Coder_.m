@@ -21,12 +21,8 @@ classdef Coder_ < ActiveModule
         FrameOverlapLen = 2^10
         mn              = 4
     end
-    properties (GetAccess = protected)
-        Input
-    end
     properties (SetAccess = protected)
         OverlapBuf
-        Output
     end
     
     methods (Abstract)

@@ -15,12 +15,8 @@ classdef CoderTDM < Coder_
 %         FrameOverlapLen
 %         mn
     end
-    properties (GetAccess = protected)
-%         Input
-    end
     properties (SetAccess = protected)
 %         OverlapBuf
-%         Output
     end
     
     methods
@@ -30,8 +26,6 @@ classdef CoderTDM < Coder_
         end
         %%
         function Reset(obj)
-            obj.Input       = [];
-            obj.Output      = [];
             Init(obj);
         end
         %%
@@ -41,12 +35,12 @@ classdef CoderTDM < Coder_
             end
         end
         %%
-        function Processing(obj)
-            for n = 1:length(obj.Input)
+        function y = Processing(obj, x)
+            for n = 1:length(x)
                 % push in buffer
-                obj.OverlapBuf{n}.Input(obj.Input{n});
+                obj.OverlapBuf{n}.Input(x{n});
                 % read buffer
-                obj.Output{n} = obj.OverlapBuf{n}.Buffer;
+                y{n} = obj.OverlapBuf{n}.Buffer;
             end
         end
         %%

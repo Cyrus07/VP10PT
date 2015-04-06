@@ -1,4 +1,4 @@
-classdef ChannelEleAWGN < Subsystem_
+classdef ChannelCohOptAWGN < Subsystem_
     %ChannelEleAWGN   v1.0, Lingchen Huang, 2015/4/1
     
     properties
@@ -6,45 +6,77 @@ classdef ChannelEleAWGN < Subsystem_
         Input
         Output
         FrameOverlapRatio
+        % Tx DSP
+        
         % DAC
+        DAC
         DACResolution
         % Rectpulse
+        Rectpulse
         SymbolRate
         TxSamplingRate
         % Tx LPF
+        LPFTx
         TxBandwidth
         TxFilterOrder
         TxFilterShape
         TxFilterDomain
-        % Channel
+        % Tx Laser
+        TxLaserPower
+        TxLaserLinewidth
+        TxLaserInitPhase
+        TxLaserFrequency
+        TxLaserAzimuth
+        TxLaserEllipticity
+        % IQ Modulator
+        VpiRf
+        VpiDC
+        ExtinctionRatio
+        ModDepth
+        % Opt AWGN Channel
         Ch
         SNR
         ChBufLen
+        % Rx Laser
+        RxLaserPower
+        RxLaserLinewidth
+        RxLaserInitPhase
+        RxLaserFrequency
+        RxLaserAzimuth
+        RxLaserEllipticity
+        % Hybrid
+        HybridPhaseShift
+        % Balanced PD
+        Responsivity
+        DarkCurrent
+        Temperature
+        LoadResistance
+        AddThermalNoise = true
+        AddShotNoise = true
+        LPF
+        Bandwidth
         % Rx LPF
+        LPFRx
         RxBandwidth
         RxFilterOrder
         RxFilterShape
         RxFilterDomain
         % Sampler
+        Sampler
         RxSamplingRate
         SamplingPhase
         % ADC
+        ADC
         ADCResolution
         % DeOverlap
+        DeO
     end
     properties (SetAccess = private)
-        DAC
-        Rectpulse
-        LPFTx
-        LPFRx
-        Sampler
-        ADC
-        DeO
     end
     
     methods
         %%
-        function obj = ChannelEleAWGN(varargin)
+        function obj = ChannelCohOptAWGN(varargin)
             SetVariousProp(obj, varargin{:})
         end
         %%
@@ -53,6 +85,8 @@ classdef ChannelEleAWGN < Subsystem_
             dac = obj.DAC.Processing(x);
             rect = obj.Rectpulse.Processing(dac);
             lpftx = obj.LPFTx.Processing(rect);
+            cwtx = obj.LaserTx.Processing(length(x{1}));
+            
             ch = obj.Ch.Processing(lpftx);
             lpfrx = obj.LPFRx.Processing(ch);
             sampler = obj.Sampler.Processing(lpfrx);
@@ -69,6 +103,14 @@ classdef ChannelEleAWGN < Subsystem_
                 'FilterOrder', obj.TxFilterOrder,...
                 'FilterShape', obj.TxFilterShape,...
                 'FilterDomain', obj.TxFilterDomain);
+            obj.LaserTx     = OpticalLaserCW('SamplingRate', obj.TxSamplingRate,...
+                'CenterFrequency', obj.TxLaserFrequency,...
+                'OutputPower', obj.TxLaserPower ,...
+                'Linewidth', obj.TxLaserLinewidth ,...
+                'InitialPhase', obj.TxLaserInitPhase ,...
+                'Azimuth', obj.TxLaserAzimuth ,...
+                'Ellipticity', obj.TxLaserEllipticity);
+            Init(obj.LaserTx);
             obj.Ch          = ChEleAWGN('nPol', obj.nPol,...
                 'BufLen', obj.ChBufLen,...
                 'FrameOverlapRatio', obj.FrameOverlapRatio);

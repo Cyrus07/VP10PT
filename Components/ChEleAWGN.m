@@ -17,16 +17,10 @@ classdef ChEleAWGN < Channel_
         BufLen              = 2^12;
     end
     properties
-%         SNR     = 10;
+        %         SNR     = 10;
     end
     properties (Access = protected)
-%         noise
-    end
-    properties (GetAccess = protected)
-%         Input
-    end
-    properties (SetAccess = protected)
-%         Output
+        %         noise
     end
     
     methods
@@ -36,8 +30,6 @@ classdef ChEleAWGN < Channel_
         end
         %%
         function Reset(obj)
-            obj.Input = [];
-            obj.Output = [];
             Init(obj);
         end
         %%
@@ -47,35 +39,35 @@ classdef ChEleAWGN < Channel_
             end
         end
         %%
-        function Processing(obj)
+        function y = Processing(obj, x)
             % AWGN
             for n = 1:obj.nPol
-                Check(obj.Input{n}, 'ElectricalSignal');
-                obj.Output{n} = Copy(obj.Input{n});
+                Check(x{n}, 'ElectricalSignal');
+                y{n} = Copy(x{n});
                 if ~obj.Active
-                    obj.Output{n}.E = obj.Input{n}.E;
+                    y{n}.E = x{n}.E;
                     continue;
                 end
-                if isempty(obj.Input{n}.E)
+                if isempty(x{n}.E)
                     continue;
                 end
-                noiseCalc(obj, n);
-                obj.Output{n}.E = obj.Input{n}.E + obj.noise{n}.Buffer;
+                noiseCalc(obj, x, n);
+                y{n}.E = x{n}.E + obj.noise{n}.Buffer;
             end
         end
         %%
-        function noiseCalc(obj, n)
+        function noiseCalc(obj, x, n)
             %
-            ps = obj.Input{n}.E(:)' * obj.Input{n}.E(:) ...
-                / size(obj.Input{n}.E,1);
+            ps = x{n}.E(:)' * x{n}.E(:) ...
+                / size(x{n}.E,1);
             pn = ps / db2pow(obj.SNR);
-            len = length(obj.Input{n}.E);
+            len = length(x{n}.E);
             %
             if ~isempty(obj.noise{n}.Buffer)
                 len = len * (1 - obj.FrameOverlapRatio);
             end
             %
-            if isreal(obj.Input{n}.E(1))
+            if isreal(x{n}.E(1))
                 noiseVec = sqrt(pn) * randn(len,1);
             else
                 noiseVec = sqrt(pn/2) * ...

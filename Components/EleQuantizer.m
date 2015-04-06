@@ -7,12 +7,6 @@ classdef EleQuantizer < Electrical_
         Resolution = 6
         type = 'mid-tread'
     end
-    properties (GetAccess = protected)
-        Input
-    end
-    properties (SetAccess = protected)
-        Output
-    end
     
     methods
         %%
@@ -20,18 +14,18 @@ classdef EleQuantizer < Electrical_
             SetVariousProp(obj, varargin{:})
         end
         %%
-        function Processing(obj)
-            for n = 1:length(obj.Input)
-                if isobject(obj.Input{n})
-                    Check(obj.Input{n}, 'ElectricalSignal');
-                    obj.Output{n} = Copy(obj.Input{n});
-                    inputVec = obj.Input{n}.E;
-                elseif isnumeric(obj.Input{n})
-                    obj.Output{n} = [];
-                    inputVec = obj.Input{n};
+        function y = Processing(obj, x)
+            for n = 1:length(x)
+                if isobject(x{n})
+                    Check(x{n}, 'ElectricalSignal');
+                    y{n} = Copy(x{n});
+                    inputVec = x{n}.E;
+                elseif isnumeric(x{n})
+                    y{n} = [];
+                    inputVec = x{n};
                 end
                 if ~obj.Active
-                    obj.Output{n}.E = inputVec;
+                    y{n}.E = inputVec;
                     continue
                 end
                 if isempty(inputVec)
@@ -39,10 +33,10 @@ classdef EleQuantizer < Electrical_
                 end
                 rOutput = obj.quantize(real(inputVec));
                 iOutput = obj.quantize(imag(inputVec));
-                if isobject(obj.Output{n})
-                    obj.Output{n}.E = rOutput + 1i * iOutput;
-                elseif isnumeric(obj.Output{n})
-                    obj.Output{n} = rOutput + 1i * iOutput;
+                if isobject(y{n})
+                    y{n}.E = rOutput + 1i * iOutput;
+                elseif isnumeric(y{n})
+                    y{n} = rOutput + 1i * iOutput;
                 end
             end
         end
