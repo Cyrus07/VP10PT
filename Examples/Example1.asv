@@ -3,7 +3,7 @@ InitSim;
 obj = CohOptB2B;
 Init(obj);
 
-% Log.SNR = [16:20];
+% Log.SNR = [16:20];    
 Log.SNR = 50;
 for id_SNR = 1:length(Log.SNR)
     obj.Channel.Ch.OSNR = Log.SNR(id_SNR);

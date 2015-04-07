@@ -3,42 +3,47 @@ classdef ChannelCohOptAWGN < Subsystem_
     
     properties
         nPol
-        Input
-        Output
         FrameOverlapRatio
         % Tx DSP
         
         % DAC
+        DAC
         DACResolution
         % Rectpulse
+        Rectpulse
         SymbolRate
-        TxSamplingRate
+        ChSamplingRate
         % Tx LPF
+        LPFTx
         TxBandwidth
         TxFilterOrder
         TxFilterShape
         TxFilterDomain
         % Tx Laser
+        LaserTx
         TxLaserPower
         TxLaserLinewidth
         TxLaserInitPhase
-        TxLaserWavelength
-        TxLaserAzimuth
-        TxLaserEllipticity
+        TxLaserFrequency
         % IQ Modulator
+        ModDeviceAngle
+        ModPhaseShift
         VpiRf
         VpiDC
-        ExtinctionRatio
+        ExRatioParent
+        ExRatioChild
+        ModBias
         ModDepth
         % Opt AWGN Channel
         Ch
-        SNR
+        OSNR
         ChBufLen
         % Rx Laser
+        LaserRx
         RxLaserPower
         RxLaserLinewidth
         RxLaserInitPhase
-        RxLaserWavelength
+        RxLaserFrequency
         RxLaserAzimuth
         RxLaserEllipticity
         % Hybrid
@@ -53,25 +58,25 @@ classdef ChannelCohOptAWGN < Subsystem_
         LPF
         Bandwidth
         % Rx LPF
+        LPFRx
         RxBandwidth
         RxFilterOrder
         RxFilterShape
         RxFilterDomain
         % Sampler
+        Sampler
         RxSamplingRate
         SamplingPhase
         % ADC
+        ADC
         ADCResolution
         % DeOverlap
+        DeO
     end
     properties (SetAccess = private)
-        DAC
-        Rectpulse
-        LPFTx
-        LPFRx
-        Sampler
-        ADC
-        DeO
+        PBS
+        Mod
+        Scope
     end
     
     methods
@@ -85,7 +90,12 @@ classdef ChannelCohOptAWGN < Subsystem_
             dac = obj.DAC.Processing(x);
             rect = obj.Rectpulse.Processing(dac);
             lpftx = obj.LPFTx.Processing(rect);
-            ch = obj.Ch.Processing(lpftx);
+            cwtx = obj.LaserTx.Processing(length(lpftx{1}.E));
+            tx = obj.Mod.Processing(cwtx, lpftx);
+            ch = obj.Ch.Processing(tx);
+            cwrx = obj.LaserRx.Processing(length(ch.Ex));
+            %hyb
+%             obj.Scope.Processing(ch)
             lpfrx = obj.LPFRx.Processing(ch);
             sampler = obj.Sampler.Processing(lpfrx);
             adc = obj.ADC.Processing(sampler);
@@ -96,15 +106,34 @@ classdef ChannelCohOptAWGN < Subsystem_
         function Init(obj)
             obj.DAC         = EleQuantizer('Resolution', obj.DACResolution);
             obj.Rectpulse   = EleRectPulse('SymbolRate', obj.SymbolRate,...
-                'SamplingRate', obj.TxSamplingRate);
+                'SamplingRate', obj.ChSamplingRate);
             obj.LPFTx       = EleLPF('Bandwidth', obj.TxBandwidth,...
                 'FilterOrder', obj.TxFilterOrder,...
                 'FilterShape', obj.TxFilterShape,...
                 'FilterDomain', obj.TxFilterDomain);
-            obj.Ch          = ChEleAWGN('nPol', obj.nPol,...
+            obj.LaserTx     = OpticalLaserCW('SamplingRate', obj.ChSamplingRate,...
+                'CenterFrequency', obj.TxLaserFrequency,...
+                'OutputPower', obj.TxLaserPower ,...
+                'Linewidth', obj.TxLaserLinewidth ,...
+                'InitialPhase', obj.TxLaserInitPhase);
+            obj.Mod         = OpticalModDualPolIQ('DeviceAngle', obj.ModDeviceAngle,...
+                'PhaseShift', obj.ModPhaseShift, ...
+                'ExRatioParent', obj.ExRatioParent, ...
+                'ExRatioChild', obj.ExRatioChild, ...
+                'VpiRf', obj.VpiRf, ...
+                'VpiDC', obj.VpiDC, ...
+                'Bias', obj.ModBias,...
+                'ModDepth', obj.ModDepth);
+            obj.Ch          = ChOptAWGN('nPol', obj.nPol,...
                 'BufLen', obj.ChBufLen,...
                 'FrameOverlapRatio', obj.FrameOverlapRatio);
-            Init(obj.Ch);
+            obj.LaserRx     = OpticalLaserCW('SamplingRate', obj.ChSamplingRate,...
+                'CenterFrequency', obj.TxLaserFrequency,...
+                'OutputPower', obj.TxLaserPower ,...
+                'Linewidth', obj.TxLaserLinewidth ,...
+                'InitialPhase', obj.TxLaserInitPhase,...
+                'Azimuth', obj.RxLaserAzimuth, ...
+                'Ellipticity', obj.RxLaserEllipticity);
             obj.LPFRx       = EleLPF('Bandwidth', obj.RxBandwidth,...
                 'FilterOrder', obj.RxFilterOrder,...
                 'FilterShape', obj.RxFilterShape,...
@@ -115,6 +144,8 @@ classdef ChannelCohOptAWGN < Subsystem_
             obj.DeO         = DeOverlap('nPol', obj.nPol,...
                 'FrameOverlapRatio', obj.FrameOverlapRatio);
             Init(obj.DeO);
+            
+            obj.Scope = SignalAnalyzer;
         end
         %%
         function Reset(obj)
