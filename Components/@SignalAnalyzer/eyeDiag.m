@@ -18,7 +18,7 @@ else
     eyeDiag.OperationMode     = 'Complex Signal';
     eyeDiag.MaximumAmplitude  = 1.1;
     eyeDiag.MinimumAmplitude  = -1.1;
-    update(eyeDiag, data./mean(abs(data)));
+    update(eyeDiag, data./max(abs(data)));
 end
 
 if strcmpi(obj.PlotType,'2D Color')
@@ -26,6 +26,6 @@ if strcmpi(obj.PlotType,'2D Color')
     cmap = colormap(obj.ColorMap);
     % black backgroup
     cmap(1,:) = [0 0 0];
-    plot(eye, cmap)
+    plot(eyeDiag, cmap)
 end
 end

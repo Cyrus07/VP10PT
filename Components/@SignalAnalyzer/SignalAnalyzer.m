@@ -6,7 +6,7 @@ classdef SignalAnalyzer < Module
     
     properties
         ColorMap = 'hot'
-        PlotType = '2D Color'
+        PlotType = '2D Line' % '2D Color' for color eyediagram
     end
     
     methods
@@ -34,8 +34,6 @@ classdef SignalAnalyzer < Module
                     case 'ElectricalSignal'
                         am = x.E;
                         
-                        % normalized field for scatter-plot
-                        am_cmp = am.' / max(abs(am));
                         % eye
                         obj.eyeDiag(am_cmp, x.Rs, x.fs / x.Rs, obj.PlotType);
                         
@@ -48,10 +46,8 @@ classdef SignalAnalyzer < Module
                         am = x.Ex;
                         
                         if ~isempty(x.Rs)
-                            % normalized field for scatter-plot
-                            am_cmp = am / max(abs(am(:)));
                             % eye
-                            obj.eyeDiag(am_cmp, x.Rs, x.fs / x.Rs, obj.PlotType);
+                            obj.eyeDiag(am, x.Rs, x.fs / x.Rs, obj.PlotType);
                         end
                         
                         % square-law and normalize for evelope detection

@@ -93,9 +93,9 @@ classdef ChannelCohOptAWGN < Subsystem_
             cwtx = obj.LaserTx.Processing(length(lpftx{1}.E));
             tx = obj.Mod.Processing(cwtx, lpftx);
             ch = obj.Ch.Processing(tx);
+            obj.Scope.Processing(ch)
             cwrx = obj.LaserRx.Processing(length(ch.Ex));
             %hyb
-%             obj.Scope.Processing(ch)
             lpfrx = obj.LPFRx.Processing(ch);
             sampler = obj.Sampler.Processing(lpfrx);
             adc = obj.ADC.Processing(sampler);

@@ -10,7 +10,6 @@ NewPaths{2} = fullfile(cfd,'Components');
 NewPaths{3} = fullfile(cfd,'Subsystems');
 NewPaths{4} = fullfile(cfd,'Projects');
 NewPaths{5} = fullfile(cfd,'Global');
-NewPaths{6} = fullfile(cfd,'C');
 for n = 1:length(NewPaths)
     addpath(NewPaths{n},path);
 end
