@@ -6,7 +6,7 @@ classdef CohOptB2B < Project_
         BitPerSymbol    = 2;
         FrameLen        = 4 * 2^10;            % [syms]
         FrameOverlapLen = 2 * 2^10;     % [syms]
-        ChannelSPS      = 8
+        ChannelSPS      = 1
         RxSPS           = 1
     end
     properties
@@ -35,16 +35,16 @@ classdef CohOptB2B < Project_
             obj.Channel.nPol = obj.nPol;
             obj.Channel.FrameOverlapRatio = obj.FrameOverlapLen / obj.FrameLen;
             obj.Channel.SymbolRate = 28e9;
-            obj.Channel.ChSamplingRate = 28e9 * obj.ChannelSPS;
+            obj.Channel.SamplingRate = obj.Channel.SymbolRate * obj.ChannelSPS;
             obj.Channel.TxBandwidth = 20e9;
             obj.Channel.TxFilterShape = 'Bessel';
             obj.Channel.TxFilterDomain = 'FD';
             obj.Channel.RxBandwidth = 20e9;
             obj.Channel.RxFilterShape = 'Bessel';
             obj.Channel.RxFilterDomain = 'FD';
-            obj.Channel.RxSamplingRate = 28e9 * obj.RxSPS;
+            obj.Channel.RxSamplingRate = obj.Channel.SymbolRate * obj.RxSPS;
             obj.Channel.SamplingPhase = 1;
-            obj.Channel.ChBufLen = obj.FrameLen * obj.ChannelSPS;
+            obj.Channel.FrameLen = obj.FrameLen * obj.ChannelSPS;
             Init(obj.Channel);
             
             obj.Rx.nPol = obj.nPol;

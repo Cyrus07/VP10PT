@@ -1,4 +1,4 @@
-function [ varargout ] = ElectricalAdd( varargin )
+function [ varargout ] = EleAdd( varargin )
 %ELECTRICALADD Summary of this function goes here
 %   Note that every two inputs generate one output
 CheckSignalType('ElectricalSignal', varargin{:})

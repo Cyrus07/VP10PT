@@ -43,8 +43,8 @@ classdef DecisionHard < Subsystem_
             % Termination condition
             if sum(obj.BERTest.ErrCount) >= obj.TCErrorCount...
                     && sum(obj.BERTest.BitCount) >= obj.TCBitCount
-                obj.BER = sum(obj.BERTest.ErrCount(3:end))...
-                    / sum(obj.BERTest.BitCount(3:end));
+                obj.BER = sum(obj.BERTest.ErrCount(2:end))...
+                    / sum(obj.BERTest.BitCount(2:end));
             end
         end
         %%

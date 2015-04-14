@@ -26,6 +26,7 @@ classdef DeOverlap < ActiveModule
         %%
         function obj = DeOverlap(varargin)
             SetVariousProp(obj, varargin{:})
+            Init(obj);
         end
         %%
         function Reset(obj)
@@ -53,7 +54,7 @@ classdef DeOverlap < ActiveModule
                 end
                 if isempty(obj.FrameBuf{n}.Buffer)
                     obj.FrameBuf{n}.Input(inputVec);
-                    y{n} = [];
+                    y{n} = obj.FrameBuf{n}.Output(length(inputVec)*obj.FrameOverlapRatio/2);
                     continue;
                 end
                 if ~logical(obj.FrameOverlapRatio)
@@ -64,7 +65,8 @@ classdef DeOverlap < ActiveModule
                     rx1 = obj.FrameBuf{n}.Buffer(end-CorrLen+1:end);
                     rx2 = x{n}.E(1:CorrLen);
                     % do correlation
-                    xcorrel = abs(ifft(fft(conj(flipud(rx1))).*fft(rx2)))/CorrLen;
+                    xcorrel = abs(ifft(fft(conj(flipud(rx1))).*fft(rx2)))...
+                        /(rx2.' * rx2);
                     [maxCorr, Idx] = max(xcorrel);
                     if maxCorr<1/4
                         warning('Low Degree of Correlation');

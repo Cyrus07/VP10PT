@@ -14,7 +14,7 @@ classdef ChOptAWGN < Channel_ & Optical_
     properties
         nPol                = 2
         FrameOverlapRatio   = 0
-        BufLen              = 2^12;
+        FrameLen              = 2^12;
     end
     properties
         OSNR
@@ -38,7 +38,7 @@ classdef ChOptAWGN < Channel_ & Optical_
         end
         %%
         function Init(obj)
-            obj.noise = BUFFER('Length', obj.BufLen);
+            obj.noise = BUFFER('Length', obj.FrameLen);
             obj.RandomNumberSeed = randi([1,1e9],1);
         end
         %%

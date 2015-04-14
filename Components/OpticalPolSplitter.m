@@ -16,13 +16,13 @@ classdef OpticalPolSplitter < Optical_
     methods
         function obj = OpticalPolSplitter(varargin)
             SetVariousProp(obj, varargin{:})
-            Init(obj);
         end
         function Init(obj)
             obj.LPH = OpticalPolLnr('DeviceAngle',obj.DeviceAngle);
             obj.LPV = OpticalPolLnr('DeviceAngle',obj.DeviceAngle + 90);
         end
         function y = Processing(obj, x)
+            Init(obj);
             y{1} = obj.LPH.Processing( x );
             y{2} = obj.LPV.Processing( x );
         end

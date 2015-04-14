@@ -35,6 +35,7 @@ classdef SignalAnalyzer < Module
                         am = x.E;
                         
                         % eye
+                        am_cmp = am / max(abs(am));
                         obj.eyeDiag(am_cmp, x.Rs, x.fs / x.Rs, obj.PlotType);
                         
                         % square-law and normalize for evelope detection
@@ -47,7 +48,8 @@ classdef SignalAnalyzer < Module
                         
                         if ~isempty(x.Rs)
                             % eye
-                            obj.eyeDiag(am, x.Rs, x.fs / x.Rs, obj.PlotType);
+                            am_cmp = am / max(abs(am));
+                            obj.eyeDiag(am_cmp, x.Rs, x.fs / x.Rs, obj.PlotType);
                         end
                         
                         % square-law and normalize for evelope detection

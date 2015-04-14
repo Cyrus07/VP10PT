@@ -12,7 +12,7 @@ eyeDiag.SymbolsPerTrace     = 4;
 
 if isreal(data(1))
     eyeDiag.MaximumAmplitude  = 1.1;
-    eyeDiag.MinimumAmplitude  = -0.1;
+    eyeDiag.MinimumAmplitude  = -1.1;
     update(eyeDiag, data);
 else
     eyeDiag.OperationMode     = 'Complex Signal';

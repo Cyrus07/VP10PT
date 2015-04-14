@@ -4,7 +4,7 @@ classdef OpticalCombiner < Optical_
     %   inputs. All the inputs should have the same Sampling Frequency.
     
     properties
-        InsertionLoss = 0
+%         InsertionLoss = 0
     end
     
     methods
