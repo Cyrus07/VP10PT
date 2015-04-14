@@ -15,15 +15,14 @@ classdef ChOptAWGN < Channel_ & Optical_
         nPol                = 2
         FrameOverlapRatio   = 0
         FrameLen              = 2^12;
-    end
-    properties
+        
         OSNR
-        %         SNR     = 10;
+        % SNR     = 10;
         RandomNumberSeed
     end
     properties (Access = protected)
         rngState
-        %         noise
+        % noise
     end
     
     methods

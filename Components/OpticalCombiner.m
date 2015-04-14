@@ -2,11 +2,7 @@ classdef OpticalCombiner < Optical_
     %OpticalCombiner N-by-1 optical power combiner
     %   Ideal optical power combiner with zero loss and arbitary number of
     %   inputs. All the inputs should have the same Sampling Frequency.
-    
-    properties
-%         InsertionLoss = 0
-    end
-    
+        
     methods
         function obj = OpticalCombiner(varargin)
             SetVariousProp(obj, varargin{:})

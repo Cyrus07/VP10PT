@@ -1,5 +1,5 @@
-classdef ChannelCohOptAWGN < Subsystem_
-    %ChannelEleAWGN   v1.0, Lingchen Huang, 2015/4/1
+classdef ChannelOpticalCohAWGN < Subsystem_
+    %ChannelOpticalCohAWGN   v1.0, Lingchen Huang, 2015/4/1
     
     properties
         nPol
@@ -61,20 +61,18 @@ classdef ChannelCohOptAWGN < Subsystem_
         RxFilterOrder
         RxFilterShape
         RxFilterDomain
-        
-        %%
+    end
+    properties
         Tx
         Ch
         Rx
         DeO
-    end
-    properties (SetAccess = private)
         Scope
     end
     
     methods
         %%
-        function obj = ChannelCohOptAWGN(varargin)
+        function obj = ChannelOpticalCohAWGN(varargin)
             SetVariousProp(obj, varargin{:})
         end
         %%

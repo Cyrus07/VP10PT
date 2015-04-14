@@ -1,9 +1,8 @@
 function [ y ] = EleSub( x1,x2 )
-%ELECTRICALSUB Summary of this function goes here
-%   Note that every two inputs generate one output
+%EleSub Summary of this function goes here
 
-Check(x2, 'ElectricalSignal')
 Check(x1, 'ElectricalSignal')
+Check(x2, 'ElectricalSignal')
 
 y = Copy(x1);
 

@@ -1,7 +1,9 @@
 function [ varargout ] = EleAdd( varargin )
-%ELECTRICALADD Summary of this function goes here
+%EleAdd Summary of this function goes here
 %   Note that every two inputs generate one output
-CheckSignalType('ElectricalSignal', varargin{:})
+for n = 1:length(varargin)
+	Check(varargin{n}, 'ElectricalSignal')
+end
 CheckEvenNargin( varargin{:} )
 
 for k = 1:2:length(varargin)

@@ -146,6 +146,7 @@ Module
 		EleQuantizer
 		EleRectPulse
 		EleSampler
+		EleSub
 
 		This module is an abstract class. Its subclasses are modeled as electrical components.
 		
@@ -160,10 +161,24 @@ Module
 		OpticalPolCtrl
 		OpticalPolLnr
 		OpticalPolRttr
+		OpticalBPD
+		OpticalHybrid
+		OpticalPD
 
 		Comments:
 		This is an abstract class. Its subclasses are moduled as optical components.
 
 	Subsystem_
+		SourceBinarys
+		TxCoderCoh
+		TxOpticalCoh
+		ChannelCohOptAWGN
+		ChannelEleAWGN
+		RxOpticalCohDP
+		DecisionHard
+		FECDecoders
+
+		Comments:
+		This module is a combinition of multiple components.
 
 	Project_

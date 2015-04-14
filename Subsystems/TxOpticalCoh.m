@@ -8,26 +8,21 @@ classdef TxOpticalCoh < Subsystem_ & Optical_
         % Tx DSP
         
         % DAC
-        DAC
         Resolution
         % Rectpulse
-        Rectpulse
         SymbolRate
         ChSamplingRate
         % LPF
-        LPF
         Bandwidth
         FilterOrder
         FilterShape
         FilterDomain
         % Laser
-        Laser
         LaserPower
         LaserLinewidth
         LaserInitPhase
         LaserFrequency
         % IQ Modulator
-        Mod
         DeviceAngle
         PhaseShift
         VpiRf
@@ -37,7 +32,12 @@ classdef TxOpticalCoh < Subsystem_ & Optical_
         Bias
         ModDepth
     end
-    properties (SetAccess = private)
+    properties
+        DAC
+        Rectpulse
+        LPF
+        Laser
+        Mod
         Scope
     end
     

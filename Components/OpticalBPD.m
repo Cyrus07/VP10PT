@@ -1,5 +1,8 @@
 classdef OpticalBPD < Optical_ & ActiveModule
-    %OpticalBPD Summary of this class goes here
+    %OpticalBPD v1.0, Lingchen Huang, 2015/4/14
+    % This module is usually used in coherent detection or differencial
+    % phase detection. Two optical photo detectors are employed and the
+    % PD output electrical fields do subtraction to obtain the output.
     
     properties
         OverlapRatio

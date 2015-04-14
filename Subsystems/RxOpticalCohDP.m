@@ -23,7 +23,8 @@ classdef RxOpticalCohDP < Subsystem_ & Optical_
         FilterOrder
         FilterShape
         FilterDomain
-        
+    end
+    properties
         Laser
         PBS
         Hybrid
@@ -31,8 +32,6 @@ classdef RxOpticalCohDP < Subsystem_ & Optical_
         Sampler
         ADC
         LPF
-    end
-    properties (SetAccess = private)
         Scope
     end
     
