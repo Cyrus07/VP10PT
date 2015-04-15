@@ -164,6 +164,10 @@ Module
 		OpticalBPD
 		OpticalHybrid
 		OpticalPD
+		OpticalPowerMeter
+		OpticalXCoupler
+		OpticalYCoupler
+		OpticaAtt
 
 		Comments:
 		This is an abstract class. Its subclasses are moduled as optical components.
@@ -179,6 +183,10 @@ Module
 		FECDecoders
 
 		Comments:
-		This module is a combinition of multiple components.
+		This is an abstract class. Its subclasses are combinitions of multiple components.
 
 	Project_
+		CohOptB2B
+
+		Comments:
+		This is an abstract class. Its subclasses are combinitions of multiple subsystems and components.
