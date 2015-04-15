@@ -28,7 +28,7 @@ classdef OpticalHybrid < Optical_
         end
         
         function [yI,yQ] = Processing(obj, x, lo)
-            obj.optPS.phi = pi/2;
+            obj.optPS.phi = -pi/2;
             [x1, x2] = OpticalXCoupler.Processing(x);
             [lo1, lo2] = OpticalXCoupler.Processing(lo);
             [yI{1}, yI{2}] = OpticalXCoupler.Processing(x1, obj.optPS.Processing(lo1));

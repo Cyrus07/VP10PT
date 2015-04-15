@@ -52,9 +52,9 @@ classdef TxOpticalCoh < Subsystem_ & Optical_
             
             dac = obj.DAC.Processing(x);
             rect = obj.Rectpulse.Processing(dac);
-            lpftx = obj.LPF.Processing(rect);
-            cwtx = obj.Laser.Processing(length(lpftx{1}.E));
-            y = obj.Mod.Processing(cwtx, lpftx);
+            lpf = obj.LPF.Processing(rect);
+            cw = obj.Laser.Processing(length(lpf{1}.E));
+            y = obj.Mod.Processing(cw, lpf);
             
         end
         %%
@@ -85,7 +85,7 @@ classdef TxOpticalCoh < Subsystem_ & Optical_
         end
         %%
         function Reset(obj)
-            Reset(obj.LaserTx)
+            Reset(obj.Laser)
         end
     end
 end

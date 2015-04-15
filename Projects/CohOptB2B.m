@@ -38,8 +38,8 @@ classdef CohOptB2B < Project_
             obj.Channel.SymbolRate = 28e9;
             obj.Channel.SamplingRate = obj.Channel.SymbolRate * obj.ChannelSPS;
             obj.Channel.RxSamplingRate = obj.Channel.SymbolRate * obj.RxSPS;
-            obj.Channel.TxBandwidth = 20e9;
-            obj.Channel.RxBandwidth = 20e9;
+            obj.Channel.TxBandwidth = 50e9;
+            obj.Channel.RxBandwidth = 50e9;
             obj.Channel.SamplingPhase = 1;
             Init(obj.Channel);
             

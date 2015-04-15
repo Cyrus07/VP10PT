@@ -36,31 +36,32 @@ classdef OpticalModMz < Optical_
         end
         
         %% main modulating functionality
-        function y = Processing(obj, xOptField, uElField, dElField)
-            Check(xOptField, 'OpticalSignal');
-            Check(uElField, 'ElectricalSignal');
-            Check(dElField, 'ElectricalSignal');
+        function y = Processing(obj, x, uE, dE)
+            Check(x, 'OpticalSignal');
+            Check(uE, 'ElectricalSignal');
+            Check(dE, 'ElectricalSignal');
+            y = Copy(x);
             
-            y = Copy(xOptField);
             if obj.Active
-                y.Rs = uElField.Rs;
+                y.Rs = uE.Rs;
                 
-                phi1 = pi*(obj.ModDepth*uElField.E)/obj.VpiRf...
+                phi1 = pi*(obj.ModDepth*uE.E)/obj.VpiRf...
                     +pi*obj.Bias/obj.VpiDC;
-                phi2 = pi*(obj.ModDepth*dElField.E)/obj.VpiRf...
+                phi2 = pi*(obj.ModDepth*dE.E)/obj.VpiRf...
                     +pi*obj.Bias/obj.VpiDC;
                 
                 if obj.PushPull,  phi2 = -phi2;  end
                 
-                a1 = xOptField.Ex./sqrt(2).*( ...
+                [xi, xq] = OpticalYCoupler.Processing(x);
+                a1 = xi.Ex.*( ...
                     obj.ampSplitRatio(1) * exp(1j*phi1) + ...
                     obj.ampSplitRatio(2) * exp(1j*phi2) );
-                a2 = xOptField.Ey./sqrt(2).*( ...
+                a2 = xq.Ey.*( ...
                     obj.ampSplitRatio(1) * exp(1j*phi1) + ...
                     obj.ampSplitRatio(2) * exp(1j*phi2) );
                 y.E = [a1,a2];
             else
-                y.E = xOptField.E;
+                y.E = x.E;
             end
         end
         

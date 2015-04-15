@@ -59,7 +59,7 @@ classdef ChOptAWGN < Channel_ & Optical_
         function noiseCalc(obj, x)
             % get Signal-to-Noise ratio per sample
             obj.SNR = obj.OSNR - 10*log10(x.fs/12.5e9);
-            signalpower = mean(sum(abs(x.E).^2));
+            signalpower = OpticalPowerMeter(x, 'W');
             noisepower = signalpower/db2pow(obj.SNR);
             Nsamp = size(x.E,1);
             

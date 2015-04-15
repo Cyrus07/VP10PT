@@ -75,7 +75,7 @@ classdef OpticalLaserCW < Optical_ & ActiveModule
             % control the polarization
             cwLaser = obj.PC.Processing(cwLaser);
             
-            optPowerMeter(cwLaser,1);
+%             OpticalPowerMeter(cwLaser);
         end     
 
     end

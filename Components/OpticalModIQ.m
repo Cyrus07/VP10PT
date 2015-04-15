@@ -64,15 +64,15 @@ classdef OpticalModIQ < Optical_
             Check(x, 'OpticalSignal');
             Check(rf, 'ElectricalSignal');
             y = Copy(x);
-            
+            [xi, xq] = OpticalYCoupler.Processing(x);
             if obj.Active
                 rf1 = Copy(rf);
                 rf1.E = real(rf.E);
                 rf2 = Copy(rf);
                 rf2.E = imag(rf.E);
                 %
-                part_i = obj.Mz_upper.Processing(x,rf1,rf1);
-                part_q = obj.Mz_lower.Processing(x,rf2,rf2);
+                part_i = obj.Mz_upper.Processing(xi,rf1,rf1);
+                part_q = obj.Mz_lower.Processing(xq,rf2,rf2);
                 % combine i q
                 y = OpticalCombiner.Processing(part_i,...
                     obj.optPS.Processing(part_q));
