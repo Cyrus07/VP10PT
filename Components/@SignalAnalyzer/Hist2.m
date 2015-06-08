@@ -1,9 +1,9 @@
-function local_max = Hist2(x1, edges)
+function local_max = Hist2(obj, x1, edges)
 %HIST2 draw color histogram of complexed signal
 
 % Copyright: WANG Dawei [EIE PolyU]   $Date:16/3/2010$
 
-if nargin < 2
+if nargin < 3
     edges = linspace(-1.4,1.4,80);
     fine_edge = linspace(-1.4,1.4,800);
 end

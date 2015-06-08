@@ -4,7 +4,7 @@ obj = CohOptB2B;
 Init(obj);
 
 Log.SNR = [9:14];    
-% Log.SNR = 50;
+% Log.SNR = 20;
 for id_SNR = 1:length(Log.SNR)
     obj.Channel.Ch.OSNR = Log.SNR(id_SNR);
     Processing(obj);

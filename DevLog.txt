@@ -22,6 +22,7 @@ Module
 	+Optical_
 	+Subsystem_
 	+Project_
+	+DSP
 
 	Comments:
 	In self-defined classes (Module and subclass of it), a property that needs to be initialized from outside the class, its attributes should be defined as Public. 
@@ -190,3 +191,14 @@ Module
 
 		Comments:
 		This is an abstract class. Its subclasses are combinitions of multiple subsystems and components.
+
+	DSP_
+		SingleCarrierDSP
+		MultiCarrierDSP
+
+		Comments:
+		This is an abstract class. Its subclasses are OOP DSP modules.
+
+		SingleCarrierDSP
+
+			Comments: 

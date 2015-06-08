@@ -67,10 +67,11 @@ classdef BERTAsync < BERT_
                 Rx = obj.RxBuf{n}.Output;
                 Ref = obj.RefBuf{n}.Output(length(Rx));
                 [ec(n), er(n), Idx] = biterr(Rx, Ref);
+                bc(n) = length(Rx);
                 obj.ErrIdx{n} = Idx;
             end
             obj.ErrCount(obj.Count) = sum(ec);
-            obj.BitCount(obj.Count) = length(x)*length(x{1});
+            obj.BitCount(obj.Count) = sum(bc);
             obj.ErrRatio(obj.Count) = mean(er);
             ShowIdx(obj);
             ShowBER(obj);
@@ -87,7 +88,7 @@ classdef BERTAsync < BERT_
             [maxCorr, Idx] = max(xcorrel);
             if maxCorr<1/3
                 warning('Low Degree of Correlation');
-                plot(xcorrel);
+%                 plot(xcorrel);
             end
             if Idx < floor(rxLen/2)
                 obj.RxBuf{n}.Output(Idx);

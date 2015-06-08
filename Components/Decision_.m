@@ -95,7 +95,7 @@ classdef Decision_ < ActiveModule
                     obj.EVM = [];
                     return;
                 end
-                N = (sqrt(obj.hMod.M)-1)^2;
+                N = max(obj.hMod.Constellation.*obj.hMod.Constellation'.');
                 len = length(x{n});
                 obj.EVM ...
                     = sqrt(abs(x{n}-obj.RefBuf{n}.Output(len)).^2/N);

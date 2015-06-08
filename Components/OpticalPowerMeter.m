@@ -14,12 +14,12 @@ y = mean(sum(abs(a).^2,2));
 
 switch lower(type)
     case 'dbm'
-    ydisp = 10 * log10(1000*y);
-    fprintf('%.4f%s\n', ydisp, ' dBm');
+        ydisp = 10 * log10(1000*y);
+%         fprintf('%.4f%s\n', ydisp, ' dBm');
     case 'mw'
-    ydisp = 1000*y;
-    fprintf('%.4f%s\n', ydisp, ' mw');
+        ydisp = 1000*y;
+%         fprintf('%.4f%s\n', ydisp, ' mw');
     case 'w'
-    ydisp = y;
-    fprintf('%.4f%s\n', ydisp, ' w');
+        ydisp = y;
+%         fprintf('%.4f%s\n', ydisp, ' w');
 end

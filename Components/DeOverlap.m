@@ -48,13 +48,18 @@ classdef DeOverlap < ActiveModule
                     inputVec = x{n};
                 end
                 % This module must be Active
+                if ~obj.FrameOverlapRatio
+                    y{n} = inputVec;
+                    continue
+                end
                 if isempty(inputVec)
                     y{n} = [];
                     continue
                 end
                 if isempty(obj.FrameBuf{n}.Buffer)
                     obj.FrameBuf{n}.Input(inputVec);
-                    y{n} = obj.FrameBuf{n}.Output(length(inputVec)*obj.FrameOverlapRatio/2);
+                    obj.FrameBuf{n}.Output(length(inputVec)*obj.FrameOverlapRatio/2);
+                    y{n} = [];
                     continue;
                 end
                 if ~logical(obj.FrameOverlapRatio)
