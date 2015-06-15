@@ -13,6 +13,8 @@ NewPaths{5} = fullfile(cfd,'Global');
 NewPaths{6} = fullfile(cfd,'DSP');
 NewPaths{7} = fullfile('F:\Lingchen\Work\Codes\VP10PT_v3.4');
 NewPaths{8} = fullfile('F:\Lingchen\Work\Codes\VP10PT_v3.4\C');
+NewPaths{9} = fullfile('F:\Lingchen\Work\Codes\VP10PT_DspAlg_v1.0');
+
 for n = 1:length(NewPaths)
     addpath(NewPaths{n},path);
 end

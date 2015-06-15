@@ -6,7 +6,7 @@ classdef CohOptB2B < Project_
         BitPerSymbol    = 2;
         FrameLen        = 1 * 2^14;            % [syms]
         FrameOverlapLen = 0 * 2^12;     % [syms]
-        ChannelSPS      = 8
+        ChannelSPS      = 2
         RxSPS           = 2
     end
     properties
@@ -33,6 +33,7 @@ classdef CohOptB2B < Project_
             obj.Tx.FrameOverlapLen = obj.FrameOverlapLen;
             obj.Tx.mn = obj.BitPerSymbol^2;
             obj.Tx.nPol = obj.nPol;
+            obj.Tx.FECType = 'LDPC';
             Init(obj.Tx);
             
             obj.Channel.nPol = obj.nPol;
@@ -58,6 +59,7 @@ classdef CohOptB2B < Project_
             obj.DSP.sps = obj.RxSPS;
             obj.DSP.mn = obj.Tx.mn;
             obj.DSP.Rs = obj.Channel.SymbolRate;
+            obj.DSP.nPol = obj.nPol;
             Init(obj.DSP);
         end
         %%

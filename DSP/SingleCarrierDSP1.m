@@ -5,8 +5,7 @@ classdef SingleCarrierDSP1 < DSP_
         % sps
         % mn
         % Rs
-        
-        se_method = 'ideal';
+        % nPol 
         se_cd   = 0;
         se_fc   = 193.1e12;
         se_bs   = 512;
@@ -31,6 +30,7 @@ classdef SingleCarrierDSP1 < DSP_
         ps_ml       = 0
     end
     properties
+        CDC
         Scope
     end
     methods
@@ -40,6 +40,14 @@ classdef SingleCarrierDSP1 < DSP_
         end
         %%
         function Init(obj)
+            for pol = 1:obj.nPol
+                obj.CDC{pol} = FrequencyDCF('Dz', obj.se_cd,...
+                    'fc', obj.se_fc,...
+                    'ntaps', obj.se_bs,...
+                    'fs', obj.Rs*obj.sps);
+                Init(obj.CDC{pol});
+            end
+            
             obj.Scope = SignalAnalyzer;
         end
         %%
@@ -47,7 +55,9 @@ classdef SingleCarrierDSP1 < DSP_
             sps = obj.sps;
             DSPIN = DspAlg.Normalize(cell2mat(x), obj.mn);
             %% static eq.: CDC
-            [DCFOUT,H] = DspAlg.FrequencyDCF(DSPIN,obj.se_cd,obj.se_fc,obj.Rs*sps,obj.se_bs,obj.se_method);
+            for pol = 1:obj.nPol
+                DCFOUT(:,pol) = obj.CDC{pol}.Processing(DSPIN(:,pol));
+            end
             %% timing sync
 
             % [TPEOUT,tpn] = DspAlg.FeedbackTPE(DCFOUT,mn,sps,4,1e-4,'gardner','linear');

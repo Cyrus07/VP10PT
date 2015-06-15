@@ -5,6 +5,7 @@ classdef DSP_ < Module
         sps
         mn
         Rs
+        nPol
     end
     
     methods (Abstract)
